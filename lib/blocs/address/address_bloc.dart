@@ -20,10 +20,10 @@ class AddressBloc extends Bloc<AddressEvent, AddressState> {
       print("AddressEvent");
       try {
         yield const AddressLoading();
-        print("AddressEvent");
+        // print("AddressEvent");
         final addressResponse = await addressRepo.getAddress();
-        print("AddressEvent");
-        print(addressResponse);
+        // print("AddressEvent");
+        // print(addressResponse);
         if (addressResponse.status == AppConstants.STATUS_SUCCESS &&
             addressResponse.data != null) {
           yield AddressLoaded(addressResponse.data!);
