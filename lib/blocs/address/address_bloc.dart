@@ -6,7 +6,6 @@ import 'package:flutter_kundol/models/address_data.dart';
 import 'package:flutter_kundol/repos/address_repo.dart';
 
 part 'address_event.dart';
-
 part 'address_state.dart';
 
 class AddressBloc extends Bloc<AddressEvent, AddressState> {

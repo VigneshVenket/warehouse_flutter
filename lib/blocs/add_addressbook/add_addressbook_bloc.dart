@@ -79,8 +79,7 @@ class AddAddressBookBloc
           yield AddAddressBookError(addressResponse.message!);
         }
       } on Error {
-        yield const AddAddressBookError(
-            "Couldn't fetch weather. Is the device online?");
+        yield const AddAddressBookError("Couldn't fetch weather. Is the device online?");
       }
     }
   }

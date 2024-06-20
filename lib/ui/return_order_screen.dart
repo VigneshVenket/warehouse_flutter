@@ -8,7 +8,8 @@ import 'package:flutter_kundol/blocs/order_shipment_return/order_shipment_return
 import 'package:flutter_kundol/blocs/order_shipment_return/order_shipment_return_state.dart';
 import 'package:flutter_kundol/constants/app_constants.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:multi_image_picker/multi_image_picker.dart';
+// import 'package:multi_image_picker/multi_image_picker.dart';
+import 'package:multi_image_picker_plus/multi_image_picker_plus.dart';
 
 import '../blocs/order_shipment_cancel/order_shipment_cancel_bloc.dart';
 import '../blocs/orders/orders_bloc.dart';
@@ -370,8 +371,12 @@ class _ReturnOrderScreenState extends State<ReturnOrderScreen> {
 
       try {
         resultList = await MultiImagePicker.pickImages(
-          maxImages: 4,
-          enableCamera: true,
+            androidOptions: AndroidOptions(
+                hasCameraInPickerPage: true,
+                maxImages: 4
+            )
+          // maxImages: 4,
+          // enableCamera: true,
         );
       } on Exception catch (e) {
         print('Error picking images: $e');

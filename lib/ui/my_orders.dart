@@ -40,7 +40,7 @@ import '../tweaks/app_localization.dart';
 class MyOrders extends StatefulWidget {
   final Function(Widget widget) navigateToNext;
 
-   MyOrders({required this.navigateToNext,Key? key}) : super(key: key);
+  MyOrders({required this.navigateToNext,Key? key}) : super(key: key);
 
   @override
   _MyOrdersState createState() => _MyOrdersState();
@@ -51,32 +51,101 @@ class _MyOrdersState extends State<MyOrders> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: BlocListener<OrderShipmentCancelBloc,OrderShipmentCancelState>(
-        listener: (context,state){
-          if(state is OrderShipmentCancelSuccess){
-            Navigator.of(context).pop();
-            widget.navigateToNext(
-                MultiBlocProvider(
-                  providers: [
-                    BlocProvider(create: (BuildContext context) {
-                      return OrdersBloc(RealOrdersRepo())
-                        ..add(const GetOrders());
-                    }),
-                    BlocProvider(create: (BuildContext context) {
-                      return OrderShipmentCancelBloc(orderShipmentCancelRepo: RealOrderShipmentCancelRepo());
-                    })
-                  ],
-                  child:  MyOrders(navigateToNext: widget.navigateToNext),
-                ));
-          }else{
+        body: BlocListener<OrderShipmentCancelBloc,OrderShipmentCancelState>(
+          listener: (context,state){
+            if(state is OrderShipmentCancelSuccess){
+              Navigator.of(context).pop();
+              widget.navigateToNext(
+                  MultiBlocProvider(
+                    providers: [
+                      BlocProvider(create: (BuildContext context) {
+                        return OrdersBloc(RealOrdersRepo())
+                          ..add(const GetOrders());
+                      }),
+                      BlocProvider(create: (BuildContext context) {
+                        return OrderShipmentCancelBloc(orderShipmentCancelRepo: RealOrderShipmentCancelRepo());
+                      })
+                    ],
+                    child:  MyOrders(navigateToNext: widget.navigateToNext),
+                  ));
+            }else{
 
-          }
-        },
-        child:  BlocBuilder<OrdersBloc, OrdersState>(builder: (context, state) {
-          if (state is OrdersLoaded) {
-            if (state.ordersData.isNotEmpty) {
-              return
-                DefaultTabController(
+            }
+          },
+          child:  BlocBuilder<OrdersBloc, OrdersState>(builder: (context, state) {
+            if (state is OrdersLoaded) {
+              if (state.ordersData.isNotEmpty) {
+                return
+                  DefaultTabController(
+                      length: 5,
+                      child: Scaffold(
+                        backgroundColor:
+                        Theme.of(context).brightness == Brightness.dark
+                            ? Color.fromRGBO(0, 0, 0, 1)
+                            : Color.fromRGBO(255, 255, 255, 1),
+                        appBar: AppBar(
+                          leading: IconButton(
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                              // Navigator.of(context).push(MaterialPageRoute(builder: (c)=>MainScreen()));
+                            },
+                            icon: Icon(Icons.arrow_back_ios,color:Theme.of(context).brightness ==
+                                Brightness.dark?Color.fromRGBO(255,255,255,1):Color.fromRGBO(18, 18, 18,1) ,),
+                          ),
+                          centerTitle: true,
+                          elevation: 0.0,
+                          backgroundColor:
+                          Theme.of(context).brightness == Brightness.dark
+                              ? Color.fromRGBO(18, 18, 18, 1)
+                              : Color.fromRGBO(255, 255, 255, 1),
+                          title: Text(
+                            "My Orders",
+                            style: GoogleFonts.gothicA1(
+                                color: Theme.of(context).brightness == Brightness.dark
+                                    ? Color.fromRGBO(255, 255, 255, 1)
+                                    : Color.fromRGBO(18, 18, 18, 1),
+                                fontSize: 18,
+                                fontWeight: FontWeight.w800),
+                          ),
+                          bottom: TabBar(
+                            isScrollable: true,
+                            unselectedLabelColor:
+                            Theme.of(context).brightness == Brightness.dark
+                                ? Color.fromRGBO(160, 160, 160, 1)
+                                : Color.fromRGBO(112, 112, 112, 1),
+                            unselectedLabelStyle: const TextStyle(
+                              fontWeight: FontWeight.w500,
+                              fontSize: 16,
+                            ),
+                            labelColor: Color.fromRGBO(255, 76, 59, 1),
+                            labelStyle: GoogleFonts.gothicA1(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 16,
+                            ),
+                            indicatorColor: Color.fromRGBO(255, 76, 59, 1),
+                            // indicatorPadding: EdgeInsets.only(left: 8, right: 8),
+                            indicatorSize: TabBarIndicatorSize.tab,
+                            tabs: [
+                              Tab(text: 'Pending'),
+                              Tab(text:'In Process'),
+                              Tab(text: 'Completed'),
+                              Tab(text: 'Cancelled'),
+                              Tab(text:'Return')
+                            ],
+                          ),
+                        ),
+                        body: TabBarView(
+                          children: [
+                            buildPage(getOrdersBy(state.ordersData, "Pending")),
+                            buildPage(getOrdersBy(state.ordersData, "Inprocess")),
+                            buildPage(getOrdersBy(state.ordersData, "Complete")),
+                            buildPage(getOrdersBy(state.ordersData, "Cancel")),
+                            buildPage(getOrdersBy(state.ordersData, "Return")),
+                          ],
+                        ),
+                      ));
+              } else {
+                return DefaultTabController(
                     length: 5,
                     child: Scaffold(
                       backgroundColor:
@@ -86,362 +155,293 @@ class _MyOrdersState extends State<MyOrders> {
                       appBar: AppBar(
                         leading: IconButton(
                           onPressed: () {
-                            Navigator.of(context).pop();
-                            // Navigator.of(context).push(MaterialPageRoute(builder: (c)=>MainScreen()));
+                            Navigator.pop(context);
                           },
                           icon: Icon(Icons.arrow_back_ios,color:Theme.of(context).brightness ==
                               Brightness.dark?Color.fromRGBO(255,255,255,1):Color.fromRGBO(18, 18, 18,1) ,),
                         ),
                         centerTitle: true,
-                        elevation: 0.0,
+                        elevation: 1,
                         backgroundColor:
                         Theme.of(context).brightness == Brightness.dark
                             ? Color.fromRGBO(18, 18, 18, 1)
                             : Color.fromRGBO(255, 255, 255, 1),
                         title: Text(
                           "My Orders",
-                          style: GoogleFonts.gothicA1(
+                          style:GoogleFonts.gothicA1(
                               color: Theme.of(context).brightness == Brightness.dark
                                   ? Color.fromRGBO(255, 255, 255, 1)
                                   : Color.fromRGBO(18, 18, 18, 1),
                               fontSize: 18,
-                              fontWeight: FontWeight.w800),
+                              fontWeight: FontWeight.w900),
                         ),
                         bottom: TabBar(
-                          isScrollable: true,
+                          isScrollable:true,
                           unselectedLabelColor:
                           Theme.of(context).brightness == Brightness.dark
                               ? Color.fromRGBO(160, 160, 160, 1)
                               : Color.fromRGBO(112, 112, 112, 1),
-                          unselectedLabelStyle: const TextStyle(
+                          unselectedLabelStyle: TextStyle(
                             fontWeight: FontWeight.w500,
                             fontSize: 16,
                           ),
                           labelColor: Color.fromRGBO(255, 76, 59, 1),
-                          labelStyle: GoogleFonts.gothicA1(
+                          labelStyle:GoogleFonts.gothicA1(
                             fontWeight: FontWeight.w600,
                             fontSize: 16,
                           ),
                           indicatorColor: Color.fromRGBO(255, 76, 59, 1),
-                          indicatorPadding: EdgeInsets.only(left: 8, right: 8),
+                          // indicatorPadding: EdgeInsets.only(left: 8, right: 8),
                           indicatorSize: TabBarIndicatorSize.tab,
                           tabs: [
-                            Tab(text: 'Pending'),
-                            Tab(text:'In Process'),
+                            Tab(text: 'Ongoing'),
+                            Tab(text: 'In Process'),
                             Tab(text: 'Completed'),
-                            Tab(text: 'Cancelled'),
-                            Tab(text:'Return')
+                            Tab(text:'Cancelled'),
+                            Tab(text:'Return'),
                           ],
                         ),
                       ),
-                      body: TabBarView(
-                        children: [
-                          buildPage(getOrdersBy(state.ordersData, "Pending")),
-                          buildPage(getOrdersBy(state.ordersData, "Inprocess")),
-                          buildPage(getOrdersBy(state.ordersData, "Complete")),
-                          buildPage(getOrdersBy(state.ordersData, "Cancel")),
-                          buildPage(getOrdersBy(state.ordersData, "Return")),
-                        ],
+                      body: Padding(
+                        padding: EdgeInsets.all(6),
+                        child: TabBarView(
+                          children: [
+                            Container(
+                              width: MediaQuery.of(context).size.width,
+                              height: MediaQuery.of(context).size.height,
+                              child: Padding(
+                                padding: const EdgeInsets.all(10.0),
+                                child: Column(
+                                  children: [
+                                    Container(
+                                      width: MediaQuery.of(context).size.width,
+                                      height: 350,
+                                      child: Image.asset(
+                                          "assets/images/order_not_found.png"),
+                                    ),
+                                    SizedBox(
+                                      height: 20,
+                                    ),
+                                    Text(
+                                      "You don’t have an order yet",
+                                      textAlign: TextAlign.center,
+                                      style:GoogleFonts.gothicA1(
+                                          fontSize: 28,
+                                          fontWeight: FontWeight.w700,
+                                          color: Theme.of(context).brightness ==
+                                              Brightness.dark
+                                              ? Color.fromRGBO(255, 255, 255, 1)
+                                              : Color.fromRGBO(0, 0, 0, 1)),
+                                    ),
+                                    SizedBox(
+                                      height: 20,
+                                    ),
+                                    // Text(
+                                    //   "You don’t have an ongoing orders at this time.",
+                                    //   style: GoogleFonts.gothicA1(
+                                    //       color: Theme.of(context).brightness ==
+                                    //               Brightness.dark
+                                    //           ? Color.fromRGBO(160, 160, 160, 1)
+                                    //           : Color.fromRGBO(112, 112, 112, 1),
+                                    //       fontSize: 16,
+                                    //       fontWeight: FontWeight.w600),
+                                    // ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            Container(
+                              width: MediaQuery.of(context).size.width,
+                              height: MediaQuery.of(context).size.height,
+                              child: Padding(
+                                padding: const EdgeInsets.all(10.0),
+                                child: Column(
+                                  children: [
+                                    Container(
+                                      width: MediaQuery.of(context).size.width,
+                                      height: 350,
+                                      child: Image.asset(
+                                          "assets/images/order_not_found.png"),
+                                    ),
+                                    SizedBox(
+                                      height: 20,
+                                    ),
+                                    Text(
+                                      "You don’t have an order yet",
+                                      textAlign: TextAlign.center,
+                                      style: GoogleFonts.gothicA1(
+                                          fontSize: 28,
+                                          fontWeight: FontWeight.w700,
+                                          color: Theme.of(context).brightness ==
+                                              Brightness.dark
+                                              ? Color.fromRGBO(255, 255, 255, 1)
+                                              : Color.fromRGBO(0, 0, 0, 1)),
+                                    ),
+                                    SizedBox(
+                                      height: 20,
+                                    ),
+                                    // Text(
+                                    //   "You don’t have an ongoing orders at this time.",
+                                    //   textAlign: TextAlign.center,
+                                    //   style:GoogleFonts.gothicA1(
+                                    //       color: Theme.of(context).brightness ==
+                                    //               Brightness.dark
+                                    //           ? Color.fromRGBO(160, 160, 160, 1)
+                                    //           : Color.fromRGBO(112, 112, 112, 1),
+                                    //       fontSize: 16,
+                                    //       fontWeight: FontWeight.w600),
+                                    // ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            Container(
+                              width: MediaQuery.of(context).size.width,
+                              height: MediaQuery.of(context).size.height,
+                              child: Padding(
+                                padding: const EdgeInsets.all(10.0),
+                                child: Column(
+                                  children: [
+                                    Container(
+                                      width: MediaQuery.of(context).size.width,
+                                      height: 350,
+                                      child: Image.asset(
+                                          "assets/images/order_not_found.png"),
+                                    ),
+                                    SizedBox(
+                                      height: 20,
+                                    ),
+                                    Text(
+                                      "You don’t have an order yet",
+                                      textAlign: TextAlign.center,
+                                      style: GoogleFonts.gothicA1(
+                                          fontSize: 28,
+                                          fontWeight: FontWeight.w700,
+                                          color: Theme.of(context).brightness ==
+                                              Brightness.dark
+                                              ? Color.fromRGBO(255, 255, 255, 1)
+                                              : Color.fromRGBO(0, 0, 0, 1)),
+                                    ),
+                                    SizedBox(
+                                      height: 20,
+                                    ),
+                                    // Text(
+                                    //   "You don’t have an ongoing orders at this time.",
+                                    //   textAlign: TextAlign.center,
+                                    //   style:GoogleFonts.gothicA1(
+                                    //       color: Theme.of(context).brightness ==
+                                    //               Brightness.dark
+                                    //           ? Color.fromRGBO(160, 160, 160, 1)
+                                    //           : Color.fromRGBO(112, 112, 112, 1),
+                                    //       fontSize: 16,
+                                    //       fontWeight: FontWeight.w600),
+                                    // ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            Container(
+                              width: MediaQuery.of(context).size.width,
+                              height: MediaQuery.of(context).size.height,
+                              child: Padding(
+                                padding: const EdgeInsets.all(10.0),
+                                child: Column(
+                                  children: [
+                                    Container(
+                                      width: MediaQuery.of(context).size.width,
+                                      height: 350,
+                                      child: Image.asset(
+                                          "assets/images/order_not_found.png"),
+                                    ),
+                                    SizedBox(
+                                      height: 20,
+                                    ),
+                                    Text(
+                                      "You don’t have an order yet",
+                                      textAlign: TextAlign.center,
+                                      style: GoogleFonts.gothicA1(
+                                          fontSize: 28,
+                                          fontWeight: FontWeight.w700,
+                                          color: Theme.of(context).brightness ==
+                                              Brightness.dark
+                                              ? Color.fromRGBO(255, 255, 255, 1)
+                                              : Color.fromRGBO(0, 0, 0, 1)),
+                                    ),
+                                    SizedBox(
+                                      height: 20,
+                                    ),
+                                    // Text(
+                                    //   "You don’t have an ongoing orders at this time.",
+                                    //   textAlign: TextAlign.center,
+                                    //   style:GoogleFonts.gothicA1(
+                                    //       color: Theme.of(context).brightness ==
+                                    //               Brightness.dark
+                                    //           ? Color.fromRGBO(160, 160, 160, 1)
+                                    //           : Color.fromRGBO(112, 112, 112, 1),
+                                    //       fontSize: 16,
+                                    //       fontWeight: FontWeight.w600),
+                                    // ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            Container(
+                              width: MediaQuery.of(context).size.width,
+                              height: MediaQuery.of(context).size.height,
+                              child: Padding(
+                                padding: const EdgeInsets.all(10.0),
+                                child: Column(
+                                  children: [
+                                    Container(
+                                      width: MediaQuery.of(context).size.width,
+                                      height: 350,
+                                      child: Image.asset(
+                                          "assets/images/order_not_found.png"),
+                                    ),
+                                    SizedBox(
+                                      height: 20,
+                                    ),
+                                    Text(
+                                      "You don’t have an order yet",
+                                      textAlign: TextAlign.center,
+                                      style: GoogleFonts.gothicA1(
+                                          fontSize: 28,
+                                          fontWeight: FontWeight.w700,
+                                          color: Theme.of(context).brightness ==
+                                              Brightness.dark
+                                              ? Color.fromRGBO(255, 255, 255, 1)
+                                              : Color.fromRGBO(0, 0, 0, 1)),
+                                    ),
+                                    SizedBox(
+                                      height: 20,
+                                    ),
+                                    // Text(
+                                    //   "You don’t have an ongoing orders at this time.",
+                                    //   textAlign: TextAlign.center,
+                                    //   style:GoogleFonts.gothicA1(
+                                    //       color: Theme.of(context).brightness ==
+                                    //               Brightness.dark
+                                    //           ? Color.fromRGBO(160, 160, 160, 1)
+                                    //           : Color.fromRGBO(112, 112, 112, 1),
+                                    //       fontSize: 16,
+                                    //       fontWeight: FontWeight.w600),
+                                    // ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ));
-            } else {
-              return DefaultTabController(
-                  length: 5,
-                  child: Scaffold(
-                    backgroundColor:
-                    Theme.of(context).brightness == Brightness.dark
-                        ? Color.fromRGBO(0, 0, 0, 1)
-                        : Color.fromRGBO(255, 255, 255, 1),
-                    appBar: AppBar(
-                      leading: IconButton(
-                        onPressed: () {
-                          Navigator.pop(context);
-                        },
-                        icon: Icon(Icons.arrow_back_ios,color:Theme.of(context).brightness ==
-                            Brightness.dark?Color.fromRGBO(255,255,255,1):Color.fromRGBO(18, 18, 18,1) ,),
-                      ),
-                      centerTitle: true,
-                      elevation: 1,
-                      backgroundColor:
-                      Theme.of(context).brightness == Brightness.dark
-                          ? Color.fromRGBO(18, 18, 18, 1)
-                          : Color.fromRGBO(255, 255, 255, 1),
-                      title: Text(
-                        "My Orders",
-                        style:GoogleFonts.gothicA1(
-                            color: Theme.of(context).brightness == Brightness.dark
-                                ? Color.fromRGBO(255, 255, 255, 1)
-                                : Color.fromRGBO(18, 18, 18, 1),
-                            fontSize: 18,
-                            fontWeight: FontWeight.w900),
-                      ),
-                      bottom: TabBar(
-                        isScrollable:true,
-                        unselectedLabelColor:
-                        Theme.of(context).brightness == Brightness.dark
-                            ? Color.fromRGBO(160, 160, 160, 1)
-                            : Color.fromRGBO(112, 112, 112, 1),
-                        unselectedLabelStyle: TextStyle(
-                          fontWeight: FontWeight.w500,
-                          fontSize: 16,
-                        ),
-                        labelColor: Color.fromRGBO(255, 76, 59, 1),
-                        labelStyle:GoogleFonts.gothicA1(
-                          fontWeight: FontWeight.w600,
-                          fontSize: 16,
-                        ),
-                        indicatorColor: Color.fromRGBO(255, 76, 59, 1),
-                        indicatorPadding: EdgeInsets.only(left: 8, right: 8),
-                        indicatorSize: TabBarIndicatorSize.tab,
-                        tabs: [
-                          Tab(text: 'Ongoing'),
-                          Tab(text: 'In Process'),
-                          Tab(text: 'Completed'),
-                          Tab(text:'Cancelled'),
-                          Tab(text:'Return'),
-                        ],
-                      ),
-                    ),
-                    body: Padding(
-                      padding: EdgeInsets.all(6),
-                      child: TabBarView(
-                        children: [
-                          Container(
-                            width: MediaQuery.of(context).size.width,
-                            height: MediaQuery.of(context).size.height,
-                            child: Padding(
-                              padding: const EdgeInsets.all(10.0),
-                              child: Column(
-                                children: [
-                                  Container(
-                                    width: MediaQuery.of(context).size.width,
-                                    height: 350,
-                                    child: Image.asset(
-                                        "assets/images/order_not_found.png"),
-                                  ),
-                                  SizedBox(
-                                    height: 20,
-                                  ),
-                                  Text(
-                                    "You don’t have an order yet",
-                                    textAlign: TextAlign.center,
-                                    style:GoogleFonts.gothicA1(
-                                        fontSize: 28,
-                                        fontWeight: FontWeight.w700,
-                                        color: Theme.of(context).brightness ==
-                                            Brightness.dark
-                                            ? Color.fromRGBO(255, 255, 255, 1)
-                                            : Color.fromRGBO(0, 0, 0, 1)),
-                                  ),
-                                  SizedBox(
-                                    height: 20,
-                                  ),
-                                  // Text(
-                                  //   "You don’t have an ongoing orders at this time.",
-                                  //   style: GoogleFonts.gothicA1(
-                                  //       color: Theme.of(context).brightness ==
-                                  //               Brightness.dark
-                                  //           ? Color.fromRGBO(160, 160, 160, 1)
-                                  //           : Color.fromRGBO(112, 112, 112, 1),
-                                  //       fontSize: 16,
-                                  //       fontWeight: FontWeight.w600),
-                                  // ),
-                                ],
-                              ),
-                            ),
-                          ),
-                          Container(
-                            width: MediaQuery.of(context).size.width,
-                            height: MediaQuery.of(context).size.height,
-                            child: Padding(
-                              padding: const EdgeInsets.all(10.0),
-                              child: Column(
-                                children: [
-                                  Container(
-                                    width: MediaQuery.of(context).size.width,
-                                    height: 350,
-                                    child: Image.asset(
-                                        "assets/images/order_not_found.png"),
-                                  ),
-                                  SizedBox(
-                                    height: 20,
-                                  ),
-                                  Text(
-                                    "You don’t have an order yet",
-                                    textAlign: TextAlign.center,
-                                    style: GoogleFonts.gothicA1(
-                                        fontSize: 28,
-                                        fontWeight: FontWeight.w700,
-                                        color: Theme.of(context).brightness ==
-                                            Brightness.dark
-                                            ? Color.fromRGBO(255, 255, 255, 1)
-                                            : Color.fromRGBO(0, 0, 0, 1)),
-                                  ),
-                                  SizedBox(
-                                    height: 20,
-                                  ),
-                                  // Text(
-                                  //   "You don’t have an ongoing orders at this time.",
-                                  //   textAlign: TextAlign.center,
-                                  //   style:GoogleFonts.gothicA1(
-                                  //       color: Theme.of(context).brightness ==
-                                  //               Brightness.dark
-                                  //           ? Color.fromRGBO(160, 160, 160, 1)
-                                  //           : Color.fromRGBO(112, 112, 112, 1),
-                                  //       fontSize: 16,
-                                  //       fontWeight: FontWeight.w600),
-                                  // ),
-                                ],
-                              ),
-                            ),
-                          ),
-                          Container(
-                            width: MediaQuery.of(context).size.width,
-                            height: MediaQuery.of(context).size.height,
-                            child: Padding(
-                              padding: const EdgeInsets.all(10.0),
-                              child: Column(
-                                children: [
-                                  Container(
-                                    width: MediaQuery.of(context).size.width,
-                                    height: 350,
-                                    child: Image.asset(
-                                        "assets/images/order_not_found.png"),
-                                  ),
-                                  SizedBox(
-                                    height: 20,
-                                  ),
-                                  Text(
-                                    "You don’t have an order yet",
-                                    textAlign: TextAlign.center,
-                                    style: GoogleFonts.gothicA1(
-                                        fontSize: 28,
-                                        fontWeight: FontWeight.w700,
-                                        color: Theme.of(context).brightness ==
-                                            Brightness.dark
-                                            ? Color.fromRGBO(255, 255, 255, 1)
-                                            : Color.fromRGBO(0, 0, 0, 1)),
-                                  ),
-                                  SizedBox(
-                                    height: 20,
-                                  ),
-                                  // Text(
-                                  //   "You don’t have an ongoing orders at this time.",
-                                  //   textAlign: TextAlign.center,
-                                  //   style:GoogleFonts.gothicA1(
-                                  //       color: Theme.of(context).brightness ==
-                                  //               Brightness.dark
-                                  //           ? Color.fromRGBO(160, 160, 160, 1)
-                                  //           : Color.fromRGBO(112, 112, 112, 1),
-                                  //       fontSize: 16,
-                                  //       fontWeight: FontWeight.w600),
-                                  // ),
-                                ],
-                              ),
-                            ),
-                          ),
-                          Container(
-                            width: MediaQuery.of(context).size.width,
-                            height: MediaQuery.of(context).size.height,
-                            child: Padding(
-                              padding: const EdgeInsets.all(10.0),
-                              child: Column(
-                                children: [
-                                  Container(
-                                    width: MediaQuery.of(context).size.width,
-                                    height: 350,
-                                    child: Image.asset(
-                                        "assets/images/order_not_found.png"),
-                                  ),
-                                  SizedBox(
-                                    height: 20,
-                                  ),
-                                  Text(
-                                    "You don’t have an order yet",
-                                    textAlign: TextAlign.center,
-                                    style: GoogleFonts.gothicA1(
-                                        fontSize: 28,
-                                        fontWeight: FontWeight.w700,
-                                        color: Theme.of(context).brightness ==
-                                            Brightness.dark
-                                            ? Color.fromRGBO(255, 255, 255, 1)
-                                            : Color.fromRGBO(0, 0, 0, 1)),
-                                  ),
-                                  SizedBox(
-                                    height: 20,
-                                  ),
-                                  // Text(
-                                  //   "You don’t have an ongoing orders at this time.",
-                                  //   textAlign: TextAlign.center,
-                                  //   style:GoogleFonts.gothicA1(
-                                  //       color: Theme.of(context).brightness ==
-                                  //               Brightness.dark
-                                  //           ? Color.fromRGBO(160, 160, 160, 1)
-                                  //           : Color.fromRGBO(112, 112, 112, 1),
-                                  //       fontSize: 16,
-                                  //       fontWeight: FontWeight.w600),
-                                  // ),
-                                ],
-                              ),
-                            ),
-                          ),
-                          Container(
-                            width: MediaQuery.of(context).size.width,
-                            height: MediaQuery.of(context).size.height,
-                            child: Padding(
-                              padding: const EdgeInsets.all(10.0),
-                              child: Column(
-                                children: [
-                                  Container(
-                                    width: MediaQuery.of(context).size.width,
-                                    height: 350,
-                                    child: Image.asset(
-                                        "assets/images/order_not_found.png"),
-                                  ),
-                                  SizedBox(
-                                    height: 20,
-                                  ),
-                                  Text(
-                                    "You don’t have an order yet",
-                                    textAlign: TextAlign.center,
-                                    style: GoogleFonts.gothicA1(
-                                        fontSize: 28,
-                                        fontWeight: FontWeight.w700,
-                                        color: Theme.of(context).brightness ==
-                                            Brightness.dark
-                                            ? Color.fromRGBO(255, 255, 255, 1)
-                                            : Color.fromRGBO(0, 0, 0, 1)),
-                                  ),
-                                  SizedBox(
-                                    height: 20,
-                                  ),
-                                  // Text(
-                                  //   "You don’t have an ongoing orders at this time.",
-                                  //   textAlign: TextAlign.center,
-                                  //   style:GoogleFonts.gothicA1(
-                                  //       color: Theme.of(context).brightness ==
-                                  //               Brightness.dark
-                                  //           ? Color.fromRGBO(160, 160, 160, 1)
-                                  //           : Color.fromRGBO(112, 112, 112, 1),
-                                  //       fontSize: 16,
-                                  //       fontWeight: FontWeight.w600),
-                                  // ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ));
+              }
             }
-          }
-          return Center(
-              child: CircularProgressIndicator(
-                color: Color.fromRGBO(255, 76, 59, 1),
-              ));
-        }),
-      )
+            return Center(
+                child: CircularProgressIndicator(
+                  color: Color.fromRGBO(255, 76, 59, 1),
+                ));
+          }),
+        )
 
 
     );
@@ -452,9 +452,9 @@ class _MyOrdersState extends State<MyOrders> {
       itemCount: ordersData.length,
       itemBuilder: (context, index1) {
         return InkWell(
-          onTap: () {
-           Navigator.of(context).push(
-               MaterialPageRoute(builder:(context){
+            onTap: () {
+              Navigator.of(context).push(
+                  MaterialPageRoute(builder:(context){
                     return  BlocProvider(
                         create: (context) =>
                             ShipmentTrackBloc(RealShipmentTrackRepo()),
@@ -463,89 +463,69 @@ class _MyOrdersState extends State<MyOrders> {
                           navigateToNext: widget.navigateToNext,
                         )
                     );
-               }));
+                  }));
 
-          },
-          child:Column(
-            children: [
-              SizedBox( height: MediaQuery.of(context).size.height*0.015,),
-              Container(
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _buildOrderImages(ordersData[index1].orderDetail!),
-                    SizedBox( width: MediaQuery.of(context).size.width*0.03,),
-                    Container(
-                      width: MediaQuery.of(context).size.width*0.5,
-                      height: MediaQuery.of(context).size.height*0.2,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text("Order Id : "+"${ordersData[index1].orderId}" ,
-                            style: GoogleFonts.gothicA1(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                            color: Theme.of(context).brightness ==
-                              Brightness.dark?Color.fromRGBO(255, 255,255, 1):Color.fromRGBO(0, 0, 0,1)
-                      ),),
-                          SizedBox( height: MediaQuery.of(context).size.height*0.015,),
-                          Text( "Order Date : "+ formateDate(ordersData[index1].orderDate),
-                            style:GoogleFonts.gothicA1(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w600,
-                                color: Theme.of(context).brightness ==
-                                    Brightness.dark?Color.fromRGBO(255, 255,255, 1):Color.fromRGBO(0, 0, 0,1)
-                            ),),
-                          SizedBox( height: MediaQuery.of(context).size.height*0.015,),
-                          Text( "Items : "+ "${ordersData[index1].orderDetail!.length}",
-                            style: GoogleFonts.gothicA1(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w600,
-                                color: Theme.of(context).brightness ==
-                                    Brightness.dark?Color.fromRGBO(255, 255,255, 1):Color.fromRGBO(0, 0, 0,1)
-                            ),),
+            },
+            child:Column(
+              children: [
+                SizedBox( height: MediaQuery.of(context).size.height*0.015,),
+                Container(
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _buildOrderImages(ordersData[index1].orderDetail!),
+                      SizedBox( width: MediaQuery.of(context).size.width*0.03,),
+                      Container(
+                        width: MediaQuery.of(context).size.width*0.5,
+                        height: MediaQuery.of(context).size.height*0.22,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text("Order Id : "+"${ordersData[index1].orderId}" ,
+                              style: GoogleFonts.gothicA1(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w600,
+                                  color: Theme.of(context).brightness ==
+                                      Brightness.dark?Color.fromRGBO(255, 255,255, 1):Color.fromRGBO(0, 0, 0,1)
+                              ),),
+                            SizedBox( height: MediaQuery.of(context).size.height*0.015,),
+                            Text( "Order Date : "+ formateDate(ordersData[index1].orderDate),
+                              style:GoogleFonts.gothicA1(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w600,
+                                  color: Theme.of(context).brightness ==
+                                      Brightness.dark?Color.fromRGBO(255, 255,255, 1):Color.fromRGBO(0, 0, 0,1)
+                              ),),
+                            SizedBox( height: MediaQuery.of(context).size.height*0.015,),
+                            Text( "Items : "+ "${ordersData[index1].orderDetail!.length}",
+                              style: GoogleFonts.gothicA1(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w600,
+                                  color: Theme.of(context).brightness ==
+                                      Brightness.dark?Color.fromRGBO(255, 255,255, 1):Color.fromRGBO(0, 0, 0,1)
+                              ),),
 
-                          SizedBox( height: MediaQuery.of(context).size.height*0.015,),
-                          Text(AppData.currency!.code !+
-                              double.parse(ordersData[index1].orderPrice
-                                  .toString())
-                                  .toStringAsFixed(2),style: GoogleFonts.gothicA1(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w700,
-                              color: Color.fromRGBO(255, 76, 59,1)
-                          ),),
-                          SizedBox( height: MediaQuery.of(context).size.height*0.015,),
-                          Row(
-                            children: [
-                              Container(
-                                width: 90,
-                                height: 30,
-                                decoration: BoxDecoration(
-                                    color: Color.fromRGBO(255, 76, 59,1),
-                                  borderRadius: BorderRadius.circular(5)
-                                ),
-                                child: Center(
-                                  child: Text(ordersData[index1].orderStatus!,
-                                    textAlign: TextAlign.center,
-                                    style: GoogleFonts.gothicA1(
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w700,
-                                        color: Color.fromRGBO(255, 255, 255, 1,),
-                                    ),),
-                                ),
-                              ),
-                              SizedBox(width: 5,),
-                              ordersData[index1].orderStatus=="Pending"?
-                              GestureDetector(
-                                child: Container(
-                                  width: 100,
+                            SizedBox( height: MediaQuery.of(context).size.height*0.015,),
+                            Text(AppData.currency!.code !+
+                                double.parse(ordersData[index1].orderPrice
+                                    .toString())
+                                    .toStringAsFixed(2),style: GoogleFonts.gothicA1(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w700,
+                                color: Color.fromRGBO(255, 76, 59,1)
+                            ),),
+                            SizedBox( height: MediaQuery.of(context).size.height*0.015,),
+                            Row(
+                              children: [
+                                Container(
+                                  width: 90,
                                   height: 30,
                                   decoration: BoxDecoration(
-                                      color: Colors.black,
+                                      color: Color.fromRGBO(255, 76, 59,1),
                                       borderRadius: BorderRadius.circular(5)
                                   ),
                                   child: Center(
-                                    child: Text(ordersData[index1].orderStatus=="Pending"?"Cancel Order":"Cancelled",
+                                    child: Text(ordersData[index1].orderStatus!,
                                       textAlign: TextAlign.center,
                                       style: GoogleFonts.gothicA1(
                                         fontSize: 14,
@@ -554,24 +534,44 @@ class _MyOrdersState extends State<MyOrders> {
                                       ),),
                                   ),
                                 ),
-                                onTap: (){
-                                  BlocProvider.of<OrderShipmentCancelBloc>(context).add(OrderShipmentCancelRequested(orderId: ordersData[index1].orderId!,waybill: ordersData[index1].waybill!));
+                                SizedBox(width: 5,),
+                                ordersData[index1].orderStatus=="Pending"?
+                                GestureDetector(
+                                  child: Container(
+                                    width: 100,
+                                    height: 30,
+                                    decoration: BoxDecoration(
+                                        color: Colors.black,
+                                        borderRadius: BorderRadius.circular(5)
+                                    ),
+                                    child: Center(
+                                      child: Text(ordersData[index1].orderStatus=="Pending"?"Cancel Order":"Cancelled",
+                                        textAlign: TextAlign.center,
+                                        style: GoogleFonts.gothicA1(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w700,
+                                          color: Color.fromRGBO(255, 255, 255, 1,),
+                                        ),),
+                                    ),
+                                  ),
+                                  onTap: (){
+                                    BlocProvider.of<OrderShipmentCancelBloc>(context).add(OrderShipmentCancelRequested(orderId: ordersData[index1].orderId!,waybill: ordersData[index1].waybill!));
 
 
-                                },
-                              ):Container()
-                            ],
-                          ),
-                        ],
-                      ),
-                    )
-                  ],
+                                  },
+                                ):Container()
+                              ],
+                            ),
+                          ],
+                        ),
+                      )
+                    ],
+                  ),
                 ),
-              ),
-              // Divider(thickness: 0.8,color: Theme.of(context).brightness ==
-              //     Brightness.dark?Color.fromRGBO(70, 70,70, 1):Color.fromRGBO(190, 190, 190,1))
-            ],
-          )
+                // Divider(thickness: 0.8,color: Theme.of(context).brightness ==
+                //     Brightness.dark?Color.fromRGBO(70, 70,70, 1):Color.fromRGBO(190, 190, 190,1))
+              ],
+            )
         );
       },
     );
@@ -608,7 +608,7 @@ class _MyOrdersState extends State<MyOrders> {
             child: CachedNetworkImage(
               height: MediaQuery.sizeOf(context).height * 0.19,
               imageUrl: ApiProvider.imgMediumUrlString + orderDetail![0].product!
-                      .productGallary!.gallaryName!,
+                  .productGallary!.gallaryName!,
               fit: BoxFit.fill,
               progressIndicatorBuilder: (context, url,
                   downloadProgress) =>
@@ -633,7 +633,7 @@ class _MyOrdersState extends State<MyOrders> {
                 child: CachedNetworkImage(
                   height: MediaQuery.sizeOf(context).height * 0.095,
                   imageUrl: ApiProvider.imgMediumUrlString + orderDetail[0].product!
-                          .productGallary!.gallaryName!,
+                      .productGallary!.gallaryName!,
                   fit: BoxFit.fill,
                   progressIndicatorBuilder: (context, url,
                       downloadProgress) =>
@@ -652,7 +652,7 @@ class _MyOrdersState extends State<MyOrders> {
                 child: CachedNetworkImage(
                   height: MediaQuery.sizeOf(context).height * 0.095,
                   imageUrl: ApiProvider.imgMediumUrlString + orderDetail![1].product!
-                          .productGallary!.gallaryName!,
+                      .productGallary!.gallaryName!,
                   fit: BoxFit.fill,
                   progressIndicatorBuilder: (context, url,
                       downloadProgress) =>
@@ -721,16 +721,16 @@ class _MyOrdersState extends State<MyOrders> {
               width: MediaQuery.of(context).size.width*0.09,
               height: MediaQuery.of(context).size.width*0.09,
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(
-                    color: Theme.of(context).brightness ==
-                        Brightness.dark?Color.fromRGBO(70, 70,70, 1):Color.fromRGBO(190, 190, 190,1)
-                )
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(
+                      color: Theme.of(context).brightness ==
+                          Brightness.dark?Color.fromRGBO(70, 70,70, 1):Color.fromRGBO(190, 190, 190,1)
+                  )
               ),
               child: Center(
                 child: Text(
                   '+${orderDetail.length-2}',
-                   style: GoogleFonts.gothicA1(
+                  style: GoogleFonts.gothicA1(
                       fontSize: 15,
                       fontWeight: FontWeight.w600,
                       color: Theme.of(context).brightness ==
@@ -820,21 +820,21 @@ class _ViewOrderPageState extends State<ViewOrderPage> {
                   ),),
                   widget.ordersData!.orderStatus=="Complete"?InkWell(
                     onTap: (){
-                        Navigator.of(context).push(MaterialPageRoute(builder: (c){
-                            return  BlocProvider(
-                              create: (context) {
-                                return OrderShipmentReturnBloc(orderShipmentReturnRepo: RealOrderShipmentReturnRepo());
-                              },
-                              child: ReturnOrderScreen(ordersData: widget.ordersData,navigateToNext: widget.navigateToNext),
-                            );
-                        }));
+                      Navigator.of(context).push(MaterialPageRoute(builder: (c){
+                        return  BlocProvider(
+                          create: (context) {
+                            return OrderShipmentReturnBloc(orderShipmentReturnRepo: RealOrderShipmentReturnRepo());
+                          },
+                          child: ReturnOrderScreen(ordersData: widget.ordersData,navigateToNext: widget.navigateToNext),
+                        );
+                      }));
 
                     },
                     child: Container(
                       width: MediaQuery.of(context).size.width*0.28,
                       height: MediaQuery.of(context).size.height*0.05,
                       decoration: BoxDecoration(
-                          // color: Color.fromRGBO(255, 76, 59,1),
+                        // color: Color.fromRGBO(255, 76, 59,1),
                           borderRadius: BorderRadius.circular(5),
                           border: Border.all(color: Color.fromRGBO(255, 76, 59,1), )
                       ),
@@ -886,7 +886,7 @@ class _ViewOrderPageState extends State<ViewOrderPage> {
               Divider(),
               Container(
                 width: MediaQuery.of(context).size.width,
-                height: MediaQuery.of(context).size.height*0.23,
+                height: MediaQuery.of(context).size.height*0.24,
                 child: Padding(
                   padding: const EdgeInsets.all(10.0),
                   child: Column(
@@ -895,16 +895,16 @@ class _ViewOrderPageState extends State<ViewOrderPage> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text('Order Id',style:GoogleFonts.gothicA1(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
                             color: Theme.of(context)
                                 .brightness ==
                                 Brightness.dark
                                 ? Color.fromRGBO(160, 160, 160, 1):Color.fromRGBO(112, 112, 112, 1),
                           ),),
                           Text("${widget.ordersData!.orderId}",style: GoogleFonts.gothicA1(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
                             color: Theme.of(context)
                                 .brightness ==
                                 Brightness.dark
@@ -917,16 +917,16 @@ class _ViewOrderPageState extends State<ViewOrderPage> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text('Order Date',style: GoogleFonts.gothicA1(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
                             color: Theme.of(context)
                                 .brightness ==
                                 Brightness.dark
                                 ? Color.fromRGBO(160, 160, 160, 1):Color.fromRGBO(112, 112, 112, 1),
                           ),),
                           Text(formateDate(widget.ordersData!.orderDate),style: GoogleFonts.gothicA1(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
                             color: Theme.of(context)
                                 .brightness ==
                                 Brightness.dark
@@ -960,16 +960,16 @@ class _ViewOrderPageState extends State<ViewOrderPage> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text('Delivery Status',style: GoogleFonts.gothicA1(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
                             color: Theme.of(context)
                                 .brightness ==
                                 Brightness.dark
                                 ? Color.fromRGBO(160, 160, 160, 1):Color.fromRGBO(112, 112, 112, 1),
                           ),),
                           Text(widget.ordersData!.orderStatus!,style:GoogleFonts.gothicA1(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
                             color: Theme.of(context)
                                 .brightness ==
                                 Brightness.dark
@@ -982,16 +982,16 @@ class _ViewOrderPageState extends State<ViewOrderPage> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text('Payment Method',style: GoogleFonts.gothicA1(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
                             color: Theme.of(context)
                                 .brightness ==
                                 Brightness.dark
                                 ? Color.fromRGBO(160, 160, 160, 1):Color.fromRGBO(112, 112, 112, 1),
                           ),),
                           Text(widget.ordersData!.paymentMethod=="cod"?"Cash On Delivery":"Razorpay",style: GoogleFonts.gothicA1(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
                             color: Theme.of(context)
                                 .brightness ==
                                 Brightness.dark
@@ -1012,9 +1012,9 @@ class _ViewOrderPageState extends State<ViewOrderPage> {
                                 ? Color.fromRGBO(160, 160, 160, 1):Color.fromRGBO(112, 112, 112, 1),
                           ),),
                           Text("DELHIVERY",style: GoogleFonts.gothicA1(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w700,
-                            color: Color.fromRGBO(255, 76, 59, 1)
+                              fontSize: 14,
+                              fontWeight: FontWeight.w700,
+                              color: Color.fromRGBO(255, 76, 59, 1)
                           ),)
                         ],
                       ),
@@ -1085,7 +1085,7 @@ class _ViewOrderPageState extends State<ViewOrderPage> {
                                   ),
                                   Container(
                                     width: MediaQuery.of(context).size.width*0.48,
-                                    height: 150,
+                                    height: MediaQuery.of(context).size.width*0.4,
                                     child: Column(
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
@@ -1110,36 +1110,36 @@ class _ViewOrderPageState extends State<ViewOrderPage> {
 
                                         SizedBox(height: 10),
 
-                                         widget.ordersData!.orderStatus=="Pending"?
-                                         Row(
-                                           children: [
-                                             Text(AppData.currency!.code !+"${widget.ordersData!.orderDetail![index].productDiscount}",style: TextStyle(
-                                                       fontSize: 16,
-                                                       fontWeight: FontWeight.w700,
-                                                       color: Color.fromRGBO(255, 76, 59,1)
-                                                       ),),
-                                             SizedBox(width: 6,),
-                                             Text(AppData.currency!.code !+"${widget.ordersData!.orderDetail![index].productPrice}",style: TextStyle(
-                                                 fontSize: 14,
-                                                 fontWeight: FontWeight.w500,
-                                               color: Theme.of(context).brightness ==
-                                                   Brightness.dark?Color.fromRGBO(255, 255,255, 1):Color.fromRGBO(0, 0, 0,1),
-                                                 decoration: TextDecoration.lineThrough
-                                             ),),
-                                           ],
-                                         ) :
-                                         Column(
-                                           crossAxisAlignment: CrossAxisAlignment.start,
-                                           children: [
-                                             Row(
+                                        widget.ordersData!.orderStatus=="Pending"?
+                                        Row(
+                                          children: [
+                                            Text(AppData.currency!.code !+"${widget.ordersData!.orderDetail![index].productDiscount}",style: GoogleFonts.gothicA1(
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.w700,
+                                                color: Color.fromRGBO(255, 76, 59,1)
+                                            ),),
+                                            SizedBox(width: 6,),
+                                            Text(AppData.currency!.code !+"${widget.ordersData!.orderDetail![index].productPrice}",style:GoogleFonts.gothicA1(
+                                                fontSize: 14,
+                                                fontWeight: FontWeight.w500,
+                                                color: Theme.of(context).brightness ==
+                                                    Brightness.dark?Color.fromRGBO(255, 255,255, 1):Color.fromRGBO(0, 0, 0,1),
+                                                decoration: TextDecoration.lineThrough
+                                            ),),
+                                          ],
+                                        ) :
+                                        Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            Row(
                                               children: [
-                                                Text(AppData.currency!.code !+"${widget.ordersData!.orderDetail![index].productDiscount}",style: TextStyle(
+                                                Text(AppData.currency!.code !+"${widget.ordersData!.orderDetail![index].productDiscount}",style: GoogleFonts.gothicA1(
                                                     fontSize: 16,
                                                     fontWeight: FontWeight.w700,
                                                     color: Color.fromRGBO(255, 76, 59,1)
                                                 ),),
                                                 SizedBox(width: 6,),
-                                                Text(AppData.currency!.code !+"${widget.ordersData!.orderDetail![index].productPrice}",style: TextStyle(
+                                                Text(AppData.currency!.code !+"${widget.ordersData!.orderDetail![index].productPrice}",style: GoogleFonts.gothicA1(
                                                     fontSize: 14,
                                                     fontWeight: FontWeight.w500,
                                                     color: Theme.of(context).brightness ==
@@ -1149,54 +1149,54 @@ class _ViewOrderPageState extends State<ViewOrderPage> {
                                                 SizedBox(width: 6,),
 
                                               ],
-                                        ),
-                                             SizedBox(height: 10,),
-                                             widget.ordersData!.orderStatus=="Complete"?InkWell(
-                                               onTap: (){
-                                                 Navigator.of(context).push(MaterialPageRoute(
-                                                     builder: (context) => MultiBlocProvider(
-                                                         providers: [
-                                                           BlocProvider(
-                                                             create: (BuildContext context) {
-                                                               return ReviewsBloc(RealReviewsRepo());
-                                                             },),
-                                                           BlocProvider(
-                                                             create: (BuildContext context) {
-                                                               return DetailScreenBloc(RealCartRepo(),RealProductsRepo());
-                                                             },)
-                                                         ],
-                                                         child: ReviewNewScreen(
-                                                             widget.ordersData!.orderDetail![index]
-                                                                 .product!.productId!,
-                                                             widget.ordersData!.orderDetail![index]
-                                                                 .product!,
-                                                             widget.ordersData!.orderStatus!,
-                                                             widget.ordersData!.orderDate.toString(),
-                                                             widget.ordersData!.orderDetail![index].productQty.toString()
-                                                         )
-                                                     )
-                                                 ));
-                                               },
-                                               child: Container(
-                                                 width: MediaQuery.of(context).size.width*0.28,
-                                                 height: MediaQuery.of(context).size.height*0.03,
-                                                 decoration: BoxDecoration(
-                                                     color: Color.fromRGBO(255, 76, 59,1),
-                                                     borderRadius: BorderRadius.circular(5)
-                                                 ),
-                                                 child: Center(
-                                                   child: Text("Leave Review",
-                                                     textAlign: TextAlign.center,
-                                                     style: GoogleFonts.gothicA1(
-                                                       fontSize: 14,
-                                                       fontWeight: FontWeight.w700,
-                                                       color: Color.fromRGBO(255, 255, 255, 1,),
-                                                     ),),
-                                                 ),
-                                               ),
-                                             ):Container()
-                                           ],
-                                         )
+                                            ),
+                                            SizedBox(height: 10,),
+                                            widget.ordersData!.orderStatus=="Complete"?InkWell(
+                                              onTap: (){
+                                                Navigator.of(context).push(MaterialPageRoute(
+                                                    builder: (context) => MultiBlocProvider(
+                                                        providers: [
+                                                          BlocProvider(
+                                                            create: (BuildContext context) {
+                                                              return ReviewsBloc(RealReviewsRepo());
+                                                            },),
+                                                          BlocProvider(
+                                                            create: (BuildContext context) {
+                                                              return DetailScreenBloc(RealCartRepo(),RealProductsRepo());
+                                                            },)
+                                                        ],
+                                                        child: ReviewNewScreen(
+                                                            widget.ordersData!.orderDetail![index]
+                                                                .product!.productId!,
+                                                            widget.ordersData!.orderDetail![index]
+                                                                .product!,
+                                                            widget.ordersData!.orderStatus!,
+                                                            widget.ordersData!.orderDate.toString(),
+                                                            widget.ordersData!.orderDetail![index].productQty.toString()
+                                                        )
+                                                    )
+                                                ));
+                                              },
+                                              child: Container(
+                                                width: MediaQuery.of(context).size.width*0.28,
+                                                height: MediaQuery.of(context).size.height*0.03,
+                                                decoration: BoxDecoration(
+                                                    color: Color.fromRGBO(255, 76, 59,1),
+                                                    borderRadius: BorderRadius.circular(5)
+                                                ),
+                                                child: Center(
+                                                  child: Text("Leave Review",
+                                                    textAlign: TextAlign.center,
+                                                    style: GoogleFonts.gothicA1(
+                                                      fontSize: 14,
+                                                      fontWeight: FontWeight.w700,
+                                                      color: Color.fromRGBO(255, 255, 255, 1,),
+                                                    ),),
+                                                ),
+                                              ),
+                                            ):Container()
+                                          ],
+                                        )
                                       ],
                                     ),
                                   )
@@ -1226,13 +1226,13 @@ class _ViewOrderPageState extends State<ViewOrderPage> {
                     SizedBox(width: 5,),
                     Expanded(
                       child: Text(widget.ordersData!.deliveryStreetAadress!,
-                         style: GoogleFonts.gothicA1(
-                             fontSize: 14,
-                             fontWeight: FontWeight.w500,
-                             color: Theme.of(context).brightness==Brightness.dark?
-                             Color.fromRGBO(255, 255, 255, 1):
-                             Color.fromRGBO(0, 0, 0, 1)
-                         ),
+                        style: GoogleFonts.gothicA1(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                            color: Theme.of(context).brightness==Brightness.dark?
+                            Color.fromRGBO(255, 255, 255, 1):
+                            Color.fromRGBO(0, 0, 0, 1)
+                        ),
                       ),
                     ),
                   ],
@@ -1241,7 +1241,7 @@ class _ViewOrderPageState extends State<ViewOrderPage> {
               SizedBox(height: MediaQuery.of(context).size.height*0.015,),
               widget.ordersData!.orderStatus=="Pending"||
                   widget.ordersData!.orderStatus=="Inprocess"
-        ?Column(
+                  ?Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text("Track Order",style: GoogleFonts.gothicA1(
@@ -1408,7 +1408,7 @@ class _ViewOrderPageState extends State<ViewOrderPage> {
               Divider(),
               Container(
                 width: MediaQuery.of(context).size.width,
-                height: MediaQuery.of(context).size.height*0.25,
+                height: MediaQuery.of(context).size.height*0.27,
                 child: Padding(
                   padding: const EdgeInsets.all(10.0),
                   child: Column(
@@ -1461,7 +1461,13 @@ class _ViewOrderPageState extends State<ViewOrderPage> {
                               Color.fromRGBO(255, 255, 255, 1):
                               Color.fromRGBO(0, 0, 0, 1)
                           ),),
+                          widget.ordersData!.gstDiscount!=null?
                           Text("-${AppData.currency!.code!}${widget.ordersData!.gstDiscount!.toStringAsFixed(2)}",style: GoogleFonts.gothicA1(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w500,
+                              color: Colors.green
+                          ),):
+                          Text("-${AppData.currency!.code!}${0.toStringAsFixed(2)}",style: GoogleFonts.gothicA1(
                               fontSize: 14,
                               fontWeight: FontWeight.w500,
                               color: Colors.green
@@ -1509,9 +1515,9 @@ class _ViewOrderPageState extends State<ViewOrderPage> {
                         width: MediaQuery.of(context).size.width*0.9,
                         height: MediaQuery.of(context).size.height*0.04,
                         decoration: BoxDecoration(
-                          color:  Color.fromRGBO(
-                            255, 76, 59, 1),
-                          borderRadius: BorderRadius.circular(10)
+                            color:  Color.fromRGBO(
+                                255, 76, 59, 1),
+                            borderRadius: BorderRadius.circular(10)
                         ),
                         child: Padding(
                           padding: const EdgeInsets.all(5.0),

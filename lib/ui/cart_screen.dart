@@ -142,11 +142,11 @@ class _CartScreenState extends State<CartScreen> {
             BlocProvider.of<CartBloc>(context).add(GetCart());
 
           }else if(state is CartLoaded){
-                  for(int i=0;i<state.cartData.length;i++){
-                    if(state.cartData[i].qty> state.cartData[i].product_max_order){
-                      showGstDiscountdialog=true;
-                    }
-                  }
+            for(int i=0;i<state.cartData.length;i++){
+              if(state.cartData[i].qty> state.cartData[i].product_max_order){
+                showGstDiscountdialog=true;
+              }
+            }
           }
         },
         bloc: BlocProvider.of<CartBloc>(context),
@@ -174,137 +174,187 @@ class _CartScreenState extends State<CartScreen> {
               }
               orderTotal = orderTotal - promodiscount;
 
-             double calculateGstDiscountPrice(){
+              double calculateGstDiscountPrice(){
 
-               for(int i=0;i<state.cartData.length;i++){
+                for(int i=0;i<state.cartData.length;i++){
                   if(state.cartData[i].qty>state.cartData[i].product_max_order){
                     print(state.cartData[i].discountPrice*state.cartData[i].qty);
                     print(state.cartData[i].total);
-                      gstDiscount+=state.cartData[i].total*0.1;
+                    gstDiscount+=state.cartData[i].total*0.1;
                   }
-               }
-               return gstDiscount;
-             }
+                }
+                return gstDiscount;
+              }
 
-             calculateGstDiscountPrice();
-             orderTotal=orderTotal-gstDiscount;
-             print(gstDiscount);
+              calculateGstDiscountPrice();
+              orderTotal=orderTotal-gstDiscount;
+              print(gstDiscount);
               return
                 Column(
-                children: [
-                  Expanded(
-                    child: SingleChildScrollView(
-                      child: Padding(
-                        padding: EdgeInsets.symmetric(
-                            vertical: AppStyles.SCREEN_MARGIN_VERTICAL,
-                            horizontal: AppStyles.SCREEN_MARGIN_HORIZONTAL),
-                        child: Column(
-                          children: [
-                            ListView.separated(
-                              shrinkWrap: true,
-                              itemCount: state.cartData.length,
-                              physics: NeverScrollableScrollPhysics(),
-                              itemBuilder: (BuildContext context, int index) {
-                                quantity=state.cartData[index].qty!;
-                                return Container(
-                                  child: Row(
-                                    children: [
-                                      Container(
-                                        height: 140,
-                                        width: 140,
-                                        child: ClipRRect(
-                                          borderRadius: BorderRadius.circular(
-                                              AppStyles.CARD_RADIUS),
-                                          child:
-                                          CachedNetworkImage(
-                                            imageUrl:
-                                            ApiProvider.imgMediumUrlString +
-                                                state
-                                                    .cartData[index]
-                                                    .productGallary!
-                                                    .gallaryName!,
-                                            fit: BoxFit.cover,
-                                            progressIndicatorBuilder: (context,
-                                                url, downloadProgress) =>
-                                                Center(
-                                                    child:
-                                                    CircularProgressIndicator(
-                                                        color: Color.fromRGBO(255, 76, 59,1),
-                                                        value:
-                                                        downloadProgress
-                                                            .progress)),
-                                            errorWidget: (context, url, error) =>
-                                                Icon(Icons.error,color: Color.fromRGBO(255, 76, 59,1),),
+                  children: [
+                    Expanded(
+                      child: SingleChildScrollView(
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(
+                              vertical: AppStyles.SCREEN_MARGIN_VERTICAL,
+                              horizontal: AppStyles.SCREEN_MARGIN_HORIZONTAL),
+                          child: Column(
+                            children: [
+                              ListView.separated(
+                                shrinkWrap: true,
+                                itemCount: state.cartData.length,
+                                physics: NeverScrollableScrollPhysics(),
+                                itemBuilder: (BuildContext context, int index) {
+                                  quantity=state.cartData[index].qty!;
+                                  return Container(
+                                    child: Row(
+                                      children: [
+                                        Container(
+                                          height: 140,
+                                          width: 140,
+                                          child: ClipRRect(
+                                            borderRadius: BorderRadius.circular(
+                                                AppStyles.CARD_RADIUS),
+                                            child:
+                                            CachedNetworkImage(
+                                              imageUrl:
+                                              ApiProvider.imgMediumUrlString +
+                                                  state
+                                                      .cartData[index]
+                                                      .productGallary!
+                                                      .gallaryName!,
+                                              fit: BoxFit.cover,
+                                              progressIndicatorBuilder: (context,
+                                                  url, downloadProgress) =>
+                                                  Center(
+                                                      child:
+                                                      CircularProgressIndicator(
+                                                          color: Color.fromRGBO(255, 76, 59,1),
+                                                          value:
+                                                          downloadProgress
+                                                              .progress)),
+                                              errorWidget: (context, url, error) =>
+                                                  Icon(Icons.error,color: Color.fromRGBO(255, 76, 59,1),),
+                                            ),
                                           ),
                                         ),
-                                      ),
-                                      Expanded(
-                                        child: Container(
-                                          padding: const EdgeInsets.only(left: 10),
-                                          width: double.maxFinite,
-                                          height: 140,
-                                          child: Column(
-                                            mainAxisAlignment:
-                                            MainAxisAlignment.start,
-                                            crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                            children: [
-                                              Text(
-                                                state.cartData[index]
-                                                    .productDetail![0].title!
-                                                    .trim(),
-                                                textAlign: TextAlign.start,
-                                                overflow: TextOverflow.ellipsis,
-                                                maxLines: 3,
-                                                softWrap: false,
-                                                style: GoogleFonts.gothicA1(
-                                                  fontSize: 14,
-                                                  fontWeight: FontWeight.w500,
-                                                  color: Theme.of(context).brightness==Brightness.dark?Color.fromRGBO(255, 255, 255, 1):Color.fromRGBO(0, 0, 0, 1),
+                                        Expanded(
+                                          child: Container(
+                                            padding: const EdgeInsets.only(left: 10),
+                                            width: double.maxFinite,
+                                            height: 140,
+                                            child: Column(
+                                              mainAxisAlignment:
+                                              MainAxisAlignment.start,
+                                              crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                              children: [
+                                                Text(
+                                                  state.cartData[index]
+                                                      .productDetail![0].title!
+                                                      .trim(),
+                                                  textAlign: TextAlign.start,
+                                                  overflow: TextOverflow.ellipsis,
+                                                  maxLines: 3,
+                                                  softWrap: false,
+                                                  style: GoogleFonts.gothicA1(
+                                                    fontSize: 14,
+                                                    fontWeight: FontWeight.w500,
+                                                    color: Theme.of(context).brightness==Brightness.dark?Color.fromRGBO(255, 255, 255, 1):Color.fromRGBO(0, 0, 0, 1),
+                                                  ),
                                                 ),
-                                              ),
-                                              SizedBox(height: 15.0),
-                                              Row(
-                                                children: [
-                                                  Text(
-                                                    AppData.currency!.code! +
-                                                        double.tryParse(state
-                                                            .cartData[index].discountPrice
-                                                            .toString())!
-                                                            .toStringAsFixed(2),
-                                                    style: GoogleFonts.gothicA1(
-                                                        fontSize: 13,
-                                                        fontWeight: FontWeight.w700,
-                                                        color: Color.fromRGBO(255, 76, 59,1)
-                                                    ),),
-                                                  SizedBox(width: 5,),
-                                                  Text(
-                                                    AppData.currency!.code! +
-                                                        double.tryParse(state
-                                                            .cartData[index].price
-                                                            .toString())!
-                                                            .toStringAsFixed(2),
-                                                    style: GoogleFonts.gothicA1(
-                                                      fontSize: 12,
-                                                      fontWeight: FontWeight.w600,
-                                                      decoration:TextDecoration.lineThrough ,
-                                                      color: Theme.of(context).brightness==Brightness.dark?Color.fromRGBO(255, 255, 255, 1):Color.fromRGBO(0, 0, 0, 1),
-                                                    ),),
-                                                ],
-                                              ),
-                                              SizedBox(height: 25),
-                                              Container(
-                                                width: 96,
-                                                height: 24,
-                                                child: Row(
-                                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                SizedBox(height: 15.0),
+                                                Row(
                                                   children: [
-                                                    GestureDetector(
-                                                      onTap: (){
-                                                        setState(() {
-                                                          if(state.cartData[index].qty>1){
+                                                    Text(
+                                                      AppData.currency!.code! +
+                                                          double.tryParse(state
+                                                              .cartData[index].discountPrice
+                                                              .toString())!
+                                                              .toStringAsFixed(2),
+                                                      style: GoogleFonts.gothicA1(
+                                                          fontSize: 13,
+                                                          fontWeight: FontWeight.w700,
+                                                          color: Color.fromRGBO(255, 76, 59,1)
+                                                      ),),
+                                                    SizedBox(width: 5,),
+                                                    Text(
+                                                      AppData.currency!.code! +
+                                                          double.tryParse(state
+                                                              .cartData[index].price
+                                                              .toString())!
+                                                              .toStringAsFixed(2),
+                                                      style: GoogleFonts.gothicA1(
+                                                        fontSize: 12,
+                                                        fontWeight: FontWeight.w600,
+                                                        decoration:TextDecoration.lineThrough ,
+                                                        color: Theme.of(context).brightness==Brightness.dark?Color.fromRGBO(255, 255, 255, 1):Color.fromRGBO(0, 0, 0, 1),
+                                                      ),),
+                                                  ],
+                                                ),
+                                                SizedBox(height: 20),
+                                                Container(
+                                                  width: 96,
+                                                  height: 24,
+                                                  child: Row(
+                                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                    children: [
+                                                      GestureDetector(
+                                                        onTap: (){
+                                                          setState(() {
+                                                            if(state.cartData[index].qty>1){
 
-                                                            state.cartData[index].qty--;
+                                                              state.cartData[index].qty--;
+
+                                                              BlocProvider.of<CartBloc>(context).add(UpdateCart(
+                                                                  state.cartData[index].productId,
+                                                                  state.cartData[index].productCombinationId,
+                                                                  state.cartData[index].qty
+                                                              )
+                                                              );
+                                                            }
+                                                          });
+                                                        },
+                                                        child: Container(
+                                                          width: 24,
+                                                          height: 24,
+                                                          decoration: BoxDecoration(
+                                                              borderRadius: BorderRadius.circular(5),
+                                                              border: Border.all(
+                                                                  color: Theme.of(context).brightness==Brightness.dark?Color.fromRGBO(160, 160, 160, 1):Color.fromRGBO(112, 112, 112, 1)
+                                                              )
+                                                          ),
+                                                          child: Icon(Icons.remove,
+                                                              size: 20,
+                                                              color: Theme.of(context).brightness==Brightness.dark?Color.fromRGBO(160, 160, 160, 1):Color.fromRGBO(112, 112, 112, 1)
+                                                          ),
+                                                        ),
+                                                      ),
+                                                      Container(
+                                                          width: 40,
+                                                          height: 24,
+                                                          decoration: BoxDecoration(
+                                                            borderRadius: BorderRadius.circular(5),
+                                                            color:Theme.of(context).brightness==Brightness.dark?Color.fromRGBO(29, 29, 29, 1):Color.fromRGBO(240, 240, 240, 1) ,
+                                                            // border: Border.all(
+                                                            //     color: Theme.of(context).brightness==Brightness.dark?Color.fromRGBO(160, 160, 160, 1):Color.fromRGBO(112, 112, 112, 1)
+                                                            // )
+                                                          ),
+                                                          child: Center(
+                                                            child: Text(state.cartData[index].qty.toString(),
+                                                              textAlign: TextAlign.center,
+                                                              style: GoogleFonts.gothicA1(
+                                                                fontWeight: FontWeight.w500,
+                                                                fontSize: 14,
+                                                                color:Theme.of(context).brightness==Brightness.dark?Color.fromRGBO(255, 255, 255, 1):Color.fromRGBO(0,0, 0, 1) ,
+                                                              ),),
+                                                          )
+                                                      ),
+                                                      GestureDetector(
+                                                        onTap: (){
+                                                          setState(() {
+                                                            state.cartData[index].qty++;
+
 
                                                             BlocProvider.of<CartBloc>(context).add(UpdateCart(
                                                                 state.cartData[index].productId,
@@ -312,590 +362,540 @@ class _CartScreenState extends State<CartScreen> {
                                                                 state.cartData[index].qty
                                                             )
                                                             );
-                                                          }
-                                                        });
-                                                      },
-                                                      child: Container(
-                                                        width: 24,
-                                                        height: 24,
-                                                        decoration: BoxDecoration(
-                                                            borderRadius: BorderRadius.circular(5),
-                                                            border: Border.all(
-                                                                color: Theme.of(context).brightness==Brightness.dark?Color.fromRGBO(160, 160, 160, 1):Color.fromRGBO(112, 112, 112, 1)
-                                                            )
+                                                          });
+
+
+
+                                                        },
+                                                        child: Container(
+                                                          width: 24,
+                                                          height: 24,
+                                                          decoration: BoxDecoration(
+                                                              borderRadius: BorderRadius.circular(5),
+                                                              border: Border.all(
+                                                                  color: Theme.of(context).brightness==Brightness.dark?Color.fromRGBO(160, 160, 160, 1):Color.fromRGBO(112, 112, 112, 1)
+                                                              )
+                                                          ),
+                                                          child: Icon(
+                                                              Icons.add,
+                                                              size: 20,
+                                                              color: Theme.of(context).brightness==Brightness.dark?Color.fromRGBO(160, 160, 160, 1):Color.fromRGBO(112, 112, 112, 1)
+                                                          ),
+
                                                         ),
-                                                        child: Icon(Icons.remove,
-                                                            size: 20,
-                                                            color: Theme.of(context).brightness==Brightness.dark?Color.fromRGBO(160, 160, 160, 1):Color.fromRGBO(112, 112, 112, 1)
-                                                        ),
-                                                      ),
-                                                    ),
-                                                    Container(
-                                                        width: 40,
-                                                        height: 24,
-                                                        decoration: BoxDecoration(
-                                                          borderRadius: BorderRadius.circular(5),
-                                                          color:Theme.of(context).brightness==Brightness.dark?Color.fromRGBO(29, 29, 29, 1):Color.fromRGBO(240, 240, 240, 1) ,
-                                                          // border: Border.all(
-                                                          //     color: Theme.of(context).brightness==Brightness.dark?Color.fromRGBO(160, 160, 160, 1):Color.fromRGBO(112, 112, 112, 1)
-                                                          // )
-                                                        ),
-                                                        child: Center(
-                                                          child: Text(state.cartData[index].qty.toString(),
-                                                            textAlign: TextAlign.center,
-                                                            style: GoogleFonts.gothicA1(
-                                                              fontWeight: FontWeight.w500,
-                                                              fontSize: 14,
-                                                              color:Theme.of(context).brightness==Brightness.dark?Color.fromRGBO(255, 255, 255, 1):Color.fromRGBO(0,0, 0, 1) ,
-                                                            ),),
-                                                        )
-                                                    ),
-                                                    GestureDetector(
-                                                      onTap: (){
-                                                        setState(() {
-                                                          state.cartData[index].qty++;
-
-
-                                                          BlocProvider.of<CartBloc>(context).add(UpdateCart(
-                                                              state.cartData[index].productId,
-                                                              state.cartData[index].productCombinationId,
-                                                              state.cartData[index].qty
-                                                          )
-                                                          );
-                                                        });
-
-
-
-                                                      },
-                                                      child: Container(
-                                                        width: 24,
-                                                        height: 24,
-                                                        decoration: BoxDecoration(
-                                                            borderRadius: BorderRadius.circular(5),
-                                                            border: Border.all(
-                                                                color: Theme.of(context).brightness==Brightness.dark?Color.fromRGBO(160, 160, 160, 1):Color.fromRGBO(112, 112, 112, 1)
-                                                            )
-                                                        ),
-                                                        child: Icon(
-                                                            Icons.add,
-                                                            size: 20,
-                                                            color: Theme.of(context).brightness==Brightness.dark?Color.fromRGBO(160, 160, 160, 1):Color.fromRGBO(112, 112, 112, 1)
-                                                        ),
-
-                                                      ),
-                                                    )
-                                                  ],
+                                                      )
+                                                    ],
+                                                  ),
                                                 ),
-                                              ),
-                                            ],
+                                              ],
+                                            ),
                                           ),
                                         ),
-                                      ),
-                                      Container(
-                                        child: IconButton(
-                                          icon: Icon(Icons.delete,size: 24,
-                                              color: Theme.of(context).brightness==Brightness.dark?Color.fromRGBO(160, 160, 160, 1):Color.fromRGBO(112, 112, 112, 1)
-                                          ),
-                                          // SvgPicture.asset(
-                                          //     "assets/icons/ic_delete.svg",
-                                          //     fit: BoxFit.none),
-                                          onPressed: () {
-                                            BlocProvider.of<CartBloc>(context)
-                                                .add(DeleteCartItem(
-                                                int.parse(state
-                                                    .cartData[index].productId
-                                                    .toString()),
-                                                state.cartData[index]
-                                                    .productCombinationId));
+                                        Container(
+                                          child: IconButton(
+                                            icon: Icon(Icons.delete,size: 24,
+                                                color: Theme.of(context).brightness==Brightness.dark?Color.fromRGBO(160, 160, 160, 1):Color.fromRGBO(112, 112, 112, 1)
+                                            ),
+                                            // SvgPicture.asset(
+                                            //     "assets/icons/ic_delete.svg",
+                                            //     fit: BoxFit.none),
+                                            onPressed: () {
+                                              BlocProvider.of<CartBloc>(context)
+                                                  .add(DeleteCartItem(
+                                                  int.parse(state
+                                                      .cartData[index].productId
+                                                      .toString()),
+                                                  state.cartData[index]
+                                                      .productCombinationId));
 
-                                            // BlocProvider.of<CartBloc>(context).add(
-                                            //   UpdateCart(state.cartData[index].productId,state.cartData[index].productCombinationId,state.cartData[index].qty)
-                                            // );
-                                          },
+                                              // BlocProvider.of<CartBloc>(context).add(
+                                              //   UpdateCart(state.cartData[index].productId,state.cartData[index].productCombinationId,state.cartData[index].qty)
+                                              // );
+                                            },
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  );  },
+                                separatorBuilder: (BuildContext context, int index) {
+                                  return SizedBox(height: 15);
+                                },
+                              ),
+                              SizedBox(
+                                height: 5,
+                              ),
+                              Divider(thickness: 0.5,),
+                              SizedBox(
+                                height: 15,
+                              ),
+                              ClipRRect(
+                                child: Container(
+                                  child: Column(
+                                    children: <Widget>[
+                                      Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Row(
+                                            children: [
+                                              Expanded(
+                                                child: Text("Promo Code :",style: GoogleFonts.gothicA1(
+                                                    fontSize: 16,
+                                                    fontWeight: FontWeight.w600,
+                                                    color: Theme.of(context).brightness==Brightness.dark?Color.fromRGBO(255, 255, 255, 1):Color.fromRGBO(0, 0, 0, 1)
+                                                ),),
+
+                                              ),
+                                              // Icon(Icons.arrow_drop_down_sharp),
+                                            ],
+                                          ),
+                                          SizedBox(height: 10.0),
+                                          Row(
+                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Container(
+                                                // padding: EdgeInsets.symmetric(
+                                                //     horizontal: 12.0),
+                                                padding: EdgeInsets.only(bottom: 4, left: 12),
+                                                width: MediaQuery.of(context).size.width*0.78,
+                                                height: 48,
+                                                decoration: BoxDecoration(// set border width
+                                                  color:Theme.of(context).brightness==Brightness.dark?Color.fromRGBO(29, 29, 29, 1):Color.fromRGBO(240, 240, 240, 1) ,
+                                                  borderRadius: const BorderRadius.all(Radius.circular(10.0)), // set rounded corner radius
+                                                ),
+                                                child: TextField(
+                                                  controller: _couponTextController,
+                                                  style: GoogleFonts.gothicA1(),
+                                                  textAlignVertical: TextAlignVertical.center,
+                                                  decoration: InputDecoration(
+                                                    border: InputBorder.none,
+                                                    hintText: AppLocalizations.of(
+                                                        context)!
+                                                        .translate("Enter Code Here"),
+                                                    hintStyle: GoogleFonts.gothicA1(
+                                                        color: Theme.of(context)
+                                                            .brightness ==
+                                                            Brightness.dark
+                                                            ? Color.fromRGBO(160, 160, 160, 1):Color.fromRGBO(112, 112, 112, 1),
+                                                        fontSize: 14,
+                                                        fontWeight: FontWeight.w500
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                              Container(
+                                                width: 48,
+                                                height: 48,
+                                                decoration: BoxDecoration(
+                                                    borderRadius: BorderRadius.circular(10),
+                                                    color: coupenSelected?Color.fromRGBO(74, 222, 128,1):Theme.of(context).brightness==Brightness.dark?
+                                                    Color.fromRGBO(255, 255, 255, 1):Color.fromRGBO(0, 0, 0, 1)
+                                                ),
+                                                child: Center(
+                                                  child: IconButton(
+                                                      onPressed: (){
+                                                        if (_couponTextController.text.toString().trim().isNotEmpty)
+                                                        {BlocProvider.of<CartBloc>(context).
+                                                        add(ApplyCoupon(_couponTextController.text.toString().trim()));}
+                                                      },
+                                                      icon:coupenSelected?Icon(Icons.close,size: 30,color: Color.fromRGBO(255, 255, 255, 1),):Icon(Icons.add,
+                                                        color: Theme.of(context).brightness==Brightness.dark?
+                                                        Color.fromRGBO(0, 0, 0, 1):Color.fromRGBO(255, 255, 255, 1),
+                                                        size: 30,)
+                                                  ),
+                                                ),
+                                              )
+                                            ],
+                                          ),
+                                          SizedBox(height: 10),
+                                          coupenSelected?Text(coupenNotification!,style: GoogleFonts.gothicA1(
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.w600,
+                                              color: coupenNotification=="Coupon added successfully"?Colors.green:Colors.red
+                                          ),):Container(),
+                                          SizedBox(height: 10),
+                                          showGstDiscountdialog?
+                                          Column(
+                                            children: [
+                                              Row(
+                                                children: [
+                                                  Expanded(
+                                                    child: Text("GST Number :",style: GoogleFonts.gothicA1(
+                                                        fontSize: 16,
+                                                        fontWeight: FontWeight.w600,
+                                                        color: Theme.of(context).brightness==Brightness.dark?Color.fromRGBO(255, 255, 255, 1):Color.fromRGBO(0, 0, 0, 1)
+                                                    ),),
+
+                                                  ),
+                                                  // Icon(Icons.arrow_drop_down_sharp),
+                                                ],
+                                              ),
+                                              SizedBox(height: 10.0),
+                                              Row(
+                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                children: [
+                                                  Container(
+                                                    // padding: EdgeInsets.symmetric(
+                                                    //     horizontal: 12.0),
+                                                    padding: EdgeInsets.only(bottom: 4, left: 12),
+                                                    width: MediaQuery.of(context).size.width*0.915,
+                                                    height: 48,
+                                                    decoration: BoxDecoration(// set border width
+                                                      color:Theme.of(context).brightness==Brightness.dark?Color.fromRGBO(29, 29, 29, 1):Color.fromRGBO(240, 240, 240, 1) ,
+                                                      borderRadius: const BorderRadius.all(Radius.circular(10.0)), // set rounded corner radius
+                                                    ),
+                                                    child: TextField(
+                                                      controller: _gstdataTextController,
+                                                      style: GoogleFonts.gothicA1(),
+                                                      textAlignVertical: TextAlignVertical.center,
+                                                      decoration: InputDecoration(
+                                                        border: InputBorder.none,
+                                                        hintText: "Enter GST Number here",
+                                                        hintStyle: GoogleFonts.gothicA1(
+                                                            color: Theme.of(context)
+                                                                .brightness ==
+                                                                Brightness.dark
+                                                                ? Color.fromRGBO(160, 160, 160, 1):Color.fromRGBO(112, 112, 112, 1),
+                                                            fontSize: 14,
+                                                            fontWeight: FontWeight.w500
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  // Container(
+                                                  //   width: 48,
+                                                  //   height: 48,
+                                                  //   decoration: BoxDecoration(
+                                                  //       borderRadius: BorderRadius.circular(10),
+                                                  //       color: coupenSelected?Color.fromRGBO(74, 222, 128,1):Theme.of(context).brightness==Brightness.dark?
+                                                  //       Color.fromRGBO(255, 255, 255, 1):Color.fromRGBO(0, 0, 0, 1)
+                                                  //   ),
+                                                  //   child: Center(
+                                                  //     child: IconButton(
+                                                  //         onPressed: (){
+                                                  //
+                                                  //         },
+                                                  //         icon:coupenSelected?Icon(Icons.close,size: 30,color: Color.fromRGBO(255, 255, 255, 1),):Icon(Icons.add,
+                                                  //           color: Theme.of(context).brightness==Brightness.dark?
+                                                  //           Color.fromRGBO(0, 0, 0, 1):Color.fromRGBO(255, 255, 255, 1),
+                                                  //           size: 30,)
+                                                  //     ),
+                                                  //   ),
+                                                  // )
+                                                ],
+                                              ),
+                                            ],
+                                          ):Container()
+
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              SizedBox(
+                                height: 5,
+                              ),
+                              Divider(thickness: 0.5,),
+                              SizedBox(
+                                height: 15,
+                              ),
+                              Column(
+                                children: [
+                                  Row(
+                                    mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(AppLocalizations.of(context)!
+                                          .translate("Subtotal")!,
+                                        style: GoogleFonts.gothicA1(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w500,
+                                            color: Theme.of(context).brightness==Brightness.dark?Color.fromRGBO(255, 255, 255, 1):Color.fromRGBO(0, 0, 0, 1)
+                                        ),
+
+                                      ),
+                                      Text(AppData.currency!.code! +
+                                          subtotal.toStringAsFixed(2),
+                                        style:GoogleFonts.gothicA1(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w500,
+                                            color: Theme.of(context).brightness==Brightness.dark?Color.fromRGBO(255, 255, 255, 1):Color.fromRGBO(0, 0, 0, 1)
                                         ),
                                       ),
                                     ],
                                   ),
-                                );  },
-                              separatorBuilder: (BuildContext context, int index) {
-                                return SizedBox(height: 15);
-                              },
-                            ),
-                            SizedBox(
-                              height: 5,
-                            ),
-                            Divider(thickness: 0.5,),
-                            SizedBox(
-                              height: 15,
-                            ),
-                            ClipRRect(
-                              child: Container(
-                                child: Column(
-                                  children: <Widget>[
-                                    Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Row(
-                                          children: [
-                                            Expanded(
-                                              child: Text("Promo Code :",style: GoogleFonts.gothicA1(
-                                                fontSize: 16,
-                                                fontWeight: FontWeight.w600,
-                                                color: Theme.of(context).brightness==Brightness.dark?Color.fromRGBO(255, 255, 255, 1):Color.fromRGBO(0, 0, 0, 1)
-                                              ),),
-
-                                            ),
-                                            // Icon(Icons.arrow_drop_down_sharp),
-                                          ],
-                                        ),
-                                        SizedBox(height: 10.0),
-                                        Row(
-                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            Container(
-                                              // padding: EdgeInsets.symmetric(
-                                              //     horizontal: 12.0),
-                                              padding: EdgeInsets.only(bottom: 4, left: 12),
-                                              width: MediaQuery.of(context).size.width*0.78,
-                                              height: 48,
-                                              decoration: BoxDecoration(// set border width
-                                                color:Theme.of(context).brightness==Brightness.dark?Color.fromRGBO(29, 29, 29, 1):Color.fromRGBO(240, 240, 240, 1) ,
-                                                borderRadius: const BorderRadius.all(Radius.circular(10.0)), // set rounded corner radius
-                                              ),
-                                              child: TextField(
-                                                controller: _couponTextController,
-                                                style: GoogleFonts.gothicA1(),
-                                                textAlignVertical: TextAlignVertical.center,
-                                                decoration: InputDecoration(
-                                                  border: InputBorder.none,
-                                                  hintText: AppLocalizations.of(
-                                                          context)!
-                                                      .translate("Enter Code Here"),
-                                                  hintStyle: GoogleFonts.gothicA1(
-                                                      color: Theme.of(context)
-                                                                  .brightness ==
-                                                              Brightness.dark
-                                                          ? Color.fromRGBO(160, 160, 160, 1):Color.fromRGBO(112, 112, 112, 1),
-                                                      fontSize: 14,
-                                                      fontWeight: FontWeight.w500
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                            Container(
-                                              width: 48,
-                                              height: 48,
-                                              decoration: BoxDecoration(
-                                                borderRadius: BorderRadius.circular(10),
-                                                color: coupenSelected?Color.fromRGBO(74, 222, 128,1):Theme.of(context).brightness==Brightness.dark?
-                                                Color.fromRGBO(255, 255, 255, 1):Color.fromRGBO(0, 0, 0, 1)
-                                              ),
-                                              child: Center(
-                                                child: IconButton(
-                                                  onPressed: (){
-                                                    if (_couponTextController.text.toString().trim().isNotEmpty)
-                                                          {BlocProvider.of<CartBloc>(context).
-                                                            add(ApplyCoupon(_couponTextController.text.toString().trim()));}
-                                                          },
-                                                  icon:coupenSelected?Icon(Icons.close,size: 30,color: Color.fromRGBO(255, 255, 255, 1),):Icon(Icons.add,
-                                                    color: Theme.of(context).brightness==Brightness.dark?
-                                                    Color.fromRGBO(0, 0, 0, 1):Color.fromRGBO(255, 255, 255, 1),
-                                                    size: 30,)
-                                                ),
-                                              ),
-                                            )
-                                          ],
-                                        ),
-                                        SizedBox(height: 10),
-                                        coupenSelected?Text(coupenNotification!,style: GoogleFonts.gothicA1(
+                                  const SizedBox(
+                                    height: 4,
+                                  ),
+                                  Row(
+                                    mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text("Discount(Coupon)",
+                                        style: GoogleFonts.gothicA1(
                                           fontSize: 14,
-                                          fontWeight: FontWeight.w600,
-                                          color: coupenNotification=="Coupon added successfully"?Colors.green:Colors.red
-                                        ),):Container(),
-                                        SizedBox(height: 10),
-                                        showGstDiscountdialog?
-                                        Column(
-                                          children: [
-                                            Row(
-                                              children: [
-                                                Expanded(
-                                                  child: Text("GST Number :",style: GoogleFonts.gothicA1(
-                                                      fontSize: 16,
-                                                      fontWeight: FontWeight.w600,
-                                                      color: Theme.of(context).brightness==Brightness.dark?Color.fromRGBO(255, 255, 255, 1):Color.fromRGBO(0, 0, 0, 1)
-                                                  ),),
-
-                                                ),
-                                                // Icon(Icons.arrow_drop_down_sharp),
-                                              ],
-                                            ),
-                                            SizedBox(height: 10.0),
-                                            Row(
-                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                              children: [
-                                                Container(
-                                                  // padding: EdgeInsets.symmetric(
-                                                  //     horizontal: 12.0),
-                                                  padding: EdgeInsets.only(bottom: 4, left: 12),
-                                                  width: MediaQuery.of(context).size.width*0.915,
-                                                  height: 48,
-                                                  decoration: BoxDecoration(// set border width
-                                                    color:Theme.of(context).brightness==Brightness.dark?Color.fromRGBO(29, 29, 29, 1):Color.fromRGBO(240, 240, 240, 1) ,
-                                                    borderRadius: const BorderRadius.all(Radius.circular(10.0)), // set rounded corner radius
-                                                  ),
-                                                  child: TextField(
-                                                    controller: _gstdataTextController,
-                                                    style: GoogleFonts.gothicA1(),
-                                                    textAlignVertical: TextAlignVertical.center,
-                                                    decoration: InputDecoration(
-                                                      border: InputBorder.none,
-                                                      hintText: "Enter GST Number here",
-                                                      hintStyle: GoogleFonts.gothicA1(
-                                                          color: Theme.of(context)
-                                                              .brightness ==
-                                                              Brightness.dark
-                                                              ? Color.fromRGBO(160, 160, 160, 1):Color.fromRGBO(112, 112, 112, 1),
-                                                          fontSize: 14,
-                                                          fontWeight: FontWeight.w500
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ),
-                                                // Container(
-                                                //   width: 48,
-                                                //   height: 48,
-                                                //   decoration: BoxDecoration(
-                                                //       borderRadius: BorderRadius.circular(10),
-                                                //       color: coupenSelected?Color.fromRGBO(74, 222, 128,1):Theme.of(context).brightness==Brightness.dark?
-                                                //       Color.fromRGBO(255, 255, 255, 1):Color.fromRGBO(0, 0, 0, 1)
-                                                //   ),
-                                                //   child: Center(
-                                                //     child: IconButton(
-                                                //         onPressed: (){
-                                                //
-                                                //         },
-                                                //         icon:coupenSelected?Icon(Icons.close,size: 30,color: Color.fromRGBO(255, 255, 255, 1),):Icon(Icons.add,
-                                                //           color: Theme.of(context).brightness==Brightness.dark?
-                                                //           Color.fromRGBO(0, 0, 0, 1):Color.fromRGBO(255, 255, 255, 1),
-                                                //           size: 30,)
-                                                //     ),
-                                                //   ),
-                                                // )
-                                              ],
-                                            ),
-                                          ],
-                                        ):Container()
-
-                                      ],
-                                    ),
-                                  ],
-                                ),
+                                          fontWeight: FontWeight.w500,
+                                          color: Theme.of(context)
+                                              .brightness ==
+                                              Brightness.dark
+                                              ? Color.fromRGBO(160, 160, 160, 1):Color.fromRGBO(112, 112, 112, 1),
+                                        ),
+                                      ),
+                                      Text(AppData.currency!.code! +
+                                          promodiscount.toStringAsFixed(2),
+                                        style: GoogleFonts.gothicA1(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w500,
+                                            color: Color.fromRGBO(74, 222, 128, 1)
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(
+                                    height: 4,
+                                  ),
+                                  Row(
+                                    mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text("Discount(GST)",
+                                        style: GoogleFonts.gothicA1(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w500,
+                                          color: Theme.of(context)
+                                              .brightness ==
+                                              Brightness.dark
+                                              ? Color.fromRGBO(160, 160, 160, 1):Color.fromRGBO(112, 112, 112, 1),
+                                        ),
+                                      ),
+                                      Text(AppData.currency!.code! +
+                                          gstDiscount.toStringAsFixed(2),
+                                        style: GoogleFonts.gothicA1(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w500,
+                                            color: Color.fromRGBO(74, 222, 128, 1)
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(
+                                    height: 15,
+                                  ),
+                                  Row(
+                                    mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text('Total :',
+                                        style: GoogleFonts.gothicA1(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w700,
+                                            color: Theme.of(context).brightness==Brightness.dark?Color.fromRGBO(255, 255, 255, 1):Color.fromRGBO(0, 0, 0, 1)
+                                        ),
+                                      ),
+                                      Text(
+                                        AppData.currency!.code! +
+                                            orderTotal.toStringAsFixed(2),
+                                        style: GoogleFonts.gothicA1(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w700,
+                                            color:Color.fromRGBO(255, 76, 59, 1)
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  // SizedBox(
+                                  //   height: 2,
+                                  // ),
+                                  // Row(
+                                  //   mainAxisAlignment:
+                                  //       MainAxisAlignment.spaceBetween,
+                                  //   children: [
+                                  //     Text(AppLocalizations.of(context)!
+                                  //         .translate("Tax")!,
+                                  //       style: TextStyle(
+                                  //         fontSize: 16,
+                                  //         fontWeight: FontWeight.w500,
+                                  //         color: Theme.of(context)
+                                  //             .brightness ==
+                                  //             Brightness.dark
+                                  //             ? Color.fromRGBO(160, 160, 160, 1):Color.fromRGBO(112, 112, 112, 1),
+                                  //       ),
+                                  //     ),
+                                  //     Text(AppData.currency!.code! + "0.00"),
+                                  //   ],
+                                  // ),
+                                  // Row(
+                                  //   mainAxisAlignment:
+                                  //       MainAxisAlignment.spaceBetween,
+                                  //   children: [
+                                  //     Text(AppLocalizations.of(context)!
+                                  //         .translate("Order Total")!),
+                                  //     Text(
+                                  //       AppData.currency!.code! +
+                                  //           orderTotal.toStringAsFixed(2),
+                                  //       style: TextStyle(
+                                  //         color:
+                                  //             Theme.of(context).primaryColor,
+                                  //       ),
+                                  //     ),
+                                  //   ],
+                                  // )
+                                ],
                               ),
-                            ),
-                            SizedBox(
-                              height: 5,
-                            ),
-                            Divider(thickness: 0.5,),
-                            SizedBox(
-                              height: 15,
-                            ),
-                            Column(
-                              children: [
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text(AppLocalizations.of(context)!
-                                        .translate("Subtotal")!,
-                                    style: GoogleFonts.gothicA1(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w500,
-                                        color: Theme.of(context).brightness==Brightness.dark?Color.fromRGBO(255, 255, 255, 1):Color.fromRGBO(0, 0, 0, 1)
-                                    ),
+                              SizedBox(height: 5),
+                              Divider(thickness: 0.5,),
+                              SizedBox(
+                                height: 15,
+                              ),
+                              Container(
+                                  width: double.maxFinite,
+                                  height: 45.0,
+                                  child: ElevatedButton(
+                                      style: ButtonStyle(
+                                          backgroundColor: MaterialStatePropertyAll(
+                                            Theme.of(context).brightness==Brightness.dark?Color.fromRGBO(0, 0, 0, 1):Color.fromRGBO(255, 255, 255, 1) ,
+                                          ),
+                                          side: MaterialStatePropertyAll(
+                                              BorderSide(color: Color.fromRGBO(255, 76, 59, 1))
+                                          ),
+                                          shape: MaterialStateProperty.all<
+                                              RoundedRectangleBorder>(RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(10.0),
+                                          ))),
+                                      onPressed: () {
 
-                                    ),
-                                    Text(AppData.currency!.code! +
-                                        subtotal.toStringAsFixed(2),
-                                      style:GoogleFonts.gothicA1(
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.w500,
-                                          color: Theme.of(context).brightness==Brightness.dark?Color.fromRGBO(255, 255, 255, 1):Color.fromRGBO(0, 0, 0, 1)
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(
-                                  height: 4,
-                                ),
-                                Row(
-                                  mainAxisAlignment:
-                                  MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text("Discount(Coupon)",
-                                      style: GoogleFonts.gothicA1(
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w500,
-                                        color: Theme.of(context)
-                                            .brightness ==
-                                            Brightness.dark
-                                            ? Color.fromRGBO(160, 160, 160, 1):Color.fromRGBO(112, 112, 112, 1),
-                                      ),
-                                    ),
-                                    Text(AppData.currency!.code! +
-                                        promodiscount.toStringAsFixed(2),
-                                      style: GoogleFonts.gothicA1(
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.w500,
-                                          color: Color.fromRGBO(74, 222, 128, 1)
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(
-                                  height: 4,
-                                ),
-                                Row(
-                                  mainAxisAlignment:
-                                  MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text("Discount(GST)",
-                                      style: GoogleFonts.gothicA1(
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w500,
-                                        color: Theme.of(context)
-                                            .brightness ==
-                                            Brightness.dark
-                                            ? Color.fromRGBO(160, 160, 160, 1):Color.fromRGBO(112, 112, 112, 1),
-                                      ),
-                                    ),
-                                    Text(AppData.currency!.code! +
-                                        gstDiscount.toStringAsFixed(2),
-                                      style: GoogleFonts.gothicA1(
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.w500,
-                                          color: Color.fromRGBO(74, 222, 128, 1)
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(
-                                  height: 15,
-                                ),
-                                Row(
-                                  mainAxisAlignment:
-                                  MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text('Total :',
-                                      style: GoogleFonts.gothicA1(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w700,
-                                          color: Theme.of(context).brightness==Brightness.dark?Color.fromRGBO(255, 255, 255, 1):Color.fromRGBO(0, 0, 0, 1)
-                                      ),
-                                    ),
-                                    Text(
-                                      AppData.currency!.code! +
-                                          orderTotal.toStringAsFixed(2),
-                                      style: GoogleFonts.gothicA1(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w700,
-                                          color:Color.fromRGBO(255, 76, 59, 1)
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                // SizedBox(
-                                //   height: 2,
-                                // ),
-                                // Row(
-                                //   mainAxisAlignment:
-                                //       MainAxisAlignment.spaceBetween,
-                                //   children: [
-                                //     Text(AppLocalizations.of(context)!
-                                //         .translate("Tax")!,
-                                //       style: TextStyle(
-                                //         fontSize: 16,
-                                //         fontWeight: FontWeight.w500,
-                                //         color: Theme.of(context)
-                                //             .brightness ==
-                                //             Brightness.dark
-                                //             ? Color.fromRGBO(160, 160, 160, 1):Color.fromRGBO(112, 112, 112, 1),
-                                //       ),
-                                //     ),
-                                //     Text(AppData.currency!.code! + "0.00"),
-                                //   ],
-                                // ),
-                                // Row(
-                                //   mainAxisAlignment:
-                                //       MainAxisAlignment.spaceBetween,
-                                //   children: [
-                                //     Text(AppLocalizations.of(context)!
-                                //         .translate("Order Total")!),
-                                //     Text(
-                                //       AppData.currency!.code! +
-                                //           orderTotal.toStringAsFixed(2),
-                                //       style: TextStyle(
-                                //         color:
-                                //             Theme.of(context).primaryColor,
-                                //       ),
-                                //     ),
-                                //   ],
-                                // )
-                              ],
-                            ),
-                            SizedBox(height: 5),
-                            Divider(thickness: 0.5,),
-                            SizedBox(
-                              height: 15,
-                            ),
-                            Container(
-                              width: double.maxFinite,
-                              height: 45.0,
-                              child: ElevatedButton(
-                                     style: ButtonStyle(
-                                      backgroundColor: MaterialStatePropertyAll(
-                                        Theme.of(context).brightness==Brightness.dark?Color.fromRGBO(0, 0, 0, 1):Color.fromRGBO(255, 255, 255, 1) ,
-                                      ),
-                                      side: MaterialStatePropertyAll(
-                                          BorderSide(color: Color.fromRGBO(255, 76, 59, 1))
-                                      ),
-                                      shape: MaterialStateProperty.all<
-                                          RoundedRectangleBorder>(RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(10.0),
-                                      ))),
-                                  onPressed: () {
+                                        widget.navigateToNext(
+                                            MultiBlocProvider(
+                                                providers: [
+                                                  BlocProvider(
+                                                    create: (BuildContext context) {
+                                                      return AddressBloc(RealAddressRepo())
+                                                        ..add(GetAddress());
+                                                    },),
+                                                  BlocProvider(
+                                                      create: (BuildContext context) {
+                                                        return CheckoutBloc(RealCheckoutRepo());
+                                                      }
+                                                  ),
+                                                  BlocProvider(
+                                                      create: (BuildContext context) {
+                                                        return ShippingCostBloc(RealShippingCostRepo());
+                                                      }
+                                                  ),
+                                                  BlocProvider(
+                                                      create:(BuildContext context){
+                                                        return WarehouseBloc(RealWarehouseRepo());
+                                                      }),
+                                                  BlocProvider(
+                                                      create:(BuildContext context){
+                                                        return WaybillBloc(RealWaybillRepo());
+                                                      }),
+                                                  BlocProvider(
+                                                      create:(BuildContext context){
+                                                        return ShipmentCreateBloc(RealShipmentCreationRepo());
+                                                      }),
+                                                  BlocProvider(
+                                                      create:(BuildContext context){
+                                                        return TaxRateBloc(RealTaxRepo());
+                                                      })
+                                                ],
+                                                child: CheckoutAddressScreen(
+                                                  couponData: couponData,
+                                                  cartItems: state.cartData,
+                                                  orderAmount: orderTotal,
+                                                  gstDiscount: gstDiscount,
+                                                  gstNumber: _gstdataTextController.text,
+                                                )
+                                            )
+                                        );
+                                      },
+                                      child: Text("Continue",style:GoogleFonts.gothicA1(
+                                          color: Color.fromRGBO(255, 76, 59, 1),
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.w700
+                                      ),))
+                              ),
 
-                                     widget.navigateToNext(
-                                         MultiBlocProvider(
-                                             providers: [
-                                               BlocProvider(
-                                                 create: (BuildContext context) {
-                                                   return AddressBloc(RealAddressRepo())
-                                                     ..add(GetAddress());
-                                                 },),
-                                               BlocProvider(
-                                                   create: (BuildContext context) {
-                                                     return CheckoutBloc(RealCheckoutRepo());
-                                                   }
-                                               ),
-                                               BlocProvider(
-                                                   create: (BuildContext context) {
-                                                     return ShippingCostBloc(RealShippingCostRepo());
-                                                   }
-                                               ),
-                                               BlocProvider(
-                                                   create:(BuildContext context){
-                                                     return WarehouseBloc(RealWarehouseRepo());
-                                                   }),
-                                               BlocProvider(
-                                                   create:(BuildContext context){
-                                                     return WaybillBloc(RealWaybillRepo());
-                                                   }),
-                                               BlocProvider(
-                                                   create:(BuildContext context){
-                                                     return ShipmentCreateBloc(RealShipmentCreationRepo());
-                                                   }),
-                                               BlocProvider(
-                                                   create:(BuildContext context){
-                                                     return TaxRateBloc(RealTaxRepo());
-                                                   })
-                                             ],
-                                             child: CheckoutAddressScreen(
-                                                couponData: couponData,
-                                                cartItems: state.cartData,
-                                               orderAmount: orderTotal,
-                                               gstDiscount: gstDiscount,
-                                               gstNumber: _gstdataTextController.text,
-                                             )
-                                         )
-                                    );
-                                  },
-                                  child: Text("Continue",style:GoogleFonts.gothicA1(
-                                    color: Color.fromRGBO(255, 76, 59, 1),
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.w700
-                                  ),))
-                            ),
-
-                          ],
+                            ],
+                          ),
                         ),
-                      ),
-                    ),
-                  ),
-                ],
-              );
-            } else {
-              return
-
-              Padding(
-                padding: const EdgeInsets.all(10.0),
-                child: Column(
-                  children: [
-                    SizedBox(
-                      height: 20,
-                    ),
-                    Container(
-                      width: double.maxFinite,
-                      height: MediaQuery.of(context).size.height*0.48,
-                      child: Image.asset("assets/images/cart_empty_image2-removebg-preview.png",fit: BoxFit.fill,),
-                    ),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    Center(
-                      child: Text("Your Cart is Empty!",
-                        textAlign: TextAlign.center,
-                        style: GoogleFonts.gothicA1(
-                          fontSize:28,
-                          color:Theme.of(context).brightness==Brightness.dark?Color.fromRGBO(255, 255, 255, 1):Color.fromRGBO(0, 0, 0, 1),
-                          fontWeight: FontWeight.w700
-                      ),),
-                    ),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    Center(
-                      child: Text("Looks like you haven’t made your order yet.",
-                        textAlign: TextAlign.center,
-                        style:GoogleFonts.gothicA1(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
-                          color: Theme.of(context).brightness==Brightness.dark?
-                          Color.fromRGBO(160, 160, 160,1):
-                          Color.fromRGBO(112, 112, 112, 1)
-                      ) ,),
-                    ),
-                    SizedBox(
-                      height: 20,
-                    ),
-                    SizedBox(
-                      height: 45,
-                      width: double.maxFinite,
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                            // backgroundColor: Color.fromRGBO(255, 76, 59,1),
-                            backgroundColor:Theme.of(context).brightness==Brightness.dark?Color.fromRGBO(0, 0, 0, 1):Color.fromRGBO(255, 255, 255, 1) ,
-                            side: BorderSide(
-                              color: Color.fromRGBO(255, 76, 59, 1)
-                            ),
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10)
-                            )
-                        ),
-                        child:Text("Shop Now",
-                          style: GoogleFonts.gothicA1(
-                              color: Color.fromRGBO(255, 76, 59, 1,),
-                              fontSize: 18,
-                              fontWeight:FontWeight.w700
-                          ),),
-                        onPressed: (){
-                          Navigator.of(context).push(MaterialPageRoute(builder: (c)=>MainScreen()));
-                                // Navigator.of(context).popUntil((route) => route.isFirst);
-                        },
                       ),
                     ),
                   ],
-                ),
-              );
+                );
+            } else {
+              return
+
+                Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: Column(
+                    children: [
+                      SizedBox(
+                        height: 20,
+                      ),
+                      Container(
+                        width: double.maxFinite,
+                        height: MediaQuery.of(context).size.height*0.48,
+                        child: Image.asset("assets/images/cart_empty_image2-removebg-preview.png",fit: BoxFit.fill,),
+                      ),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      Center(
+                        child: Text("Your Cart is Empty!",
+                          textAlign: TextAlign.center,
+                          style: GoogleFonts.gothicA1(
+                              fontSize:28,
+                              color:Theme.of(context).brightness==Brightness.dark?Color.fromRGBO(255, 255, 255, 1):Color.fromRGBO(0, 0, 0, 1),
+                              fontWeight: FontWeight.w700
+                          ),),
+                      ),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      Center(
+                        child: Text("Looks like you haven’t made your order yet.",
+                          textAlign: TextAlign.center,
+                          style:GoogleFonts.gothicA1(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                              color: Theme.of(context).brightness==Brightness.dark?
+                              Color.fromRGBO(160, 160, 160,1):
+                              Color.fromRGBO(112, 112, 112, 1)
+                          ) ,),
+                      ),
+                      SizedBox(
+                        height: 20,
+                      ),
+                      SizedBox(
+                        height: 45,
+                        width: double.maxFinite,
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            // backgroundColor: Color.fromRGBO(255, 76, 59,1),
+                              backgroundColor:Theme.of(context).brightness==Brightness.dark?Color.fromRGBO(0, 0, 0, 1):Color.fromRGBO(255, 255, 255, 1) ,
+                              side: BorderSide(
+                                  color: Color.fromRGBO(255, 76, 59, 1)
+                              ),
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10)
+                              )
+                          ),
+                          child:Text("Shop Now",
+                            style: GoogleFonts.gothicA1(
+                                color: Color.fromRGBO(255, 76, 59, 1,),
+                                fontSize: 18,
+                                fontWeight:FontWeight.w700
+                            ),),
+                          onPressed: (){
+                            Navigator.of(context).push(MaterialPageRoute(builder: (c)=>MainScreen()));
+                            // Navigator.of(context).popUntil((route) => route.isFirst);
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                );
             }
           }
           else if (state is CartLoading) {
